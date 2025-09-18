@@ -1,11 +1,13 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, Search, Menu, X, Sparkles, Zap } from 'lucide-react';
+import { BookOpen, Search, Menu, X, Sparkles, Zap, Settings } from 'lucide-react';
+import AdminPanel from './AdminPanel';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -108,6 +110,19 @@ const Header = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setIsAdminOpen(true)}
+              className="relative group mr-3"
+            >
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-1000"></div>
+              <div className="relative px-4 py-2 bg-black rounded-lg leading-none flex items-center space-x-2">
+                <Settings className="h-4 w-4 text-green-400" />
+                <span className="text-white font-medium">Admin</span>
+              </div>
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className="relative group"
             >
               <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-1000"></div>
@@ -191,6 +206,11 @@ const Header = () => {
           </div>
         </motion.div>
       </nav>
+      
+      {/* Admin Panel */}
+      {isAdminOpen && (
+        <AdminPanel onClose={() => setIsAdminOpen(false)} />
+      )}
     </motion.header>
   );
 };
