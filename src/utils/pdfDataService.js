@@ -7,51 +7,27 @@ const fallbackData = [
     name: '100 Python Interview Questions',
     file_link: 'https://drive.google.com/file/d/14M-9ZZmD9oAgE1UprFG7ywLpBi9CBCYV/view?usp=sharing',
     thumbnail: 'https://lh3.googleusercontent.com/d/14M-9ZZmD9oAgE1UprFG7ywLpBi9CBCYV=s1024?authuser=0',
-    description: 'Comprehensive collection of Python interview questions with detailed answers and explanations.',
-    pages: 150,
-    size: '5.2 MB',
-    downloads: 5420,
-    rating: 4.8,
-    tags: ['Python', 'Programming', 'Coding'],
     created_at: '2024-01-15T10:00:00Z',
-    pdf_categories: {
-      category: 'Placement Material',
-      subcategory: 'C & DSA Notes'
-    }
+    category: 'Placement Material',
+    subcategory: 'C & DSA Notes'
   },
   {
     id: '2',
     name: 'C Code for Raspberry Pi (92 pages)',
     file_link: 'https://drive.google.com/file/d/1jkHSy8VI5u2etxcueN1SbVOpeLkN21l_/view?usp=sharing',
     thumbnail: 'https://lh3.googleusercontent.com/d/1jkHSy8VI5u2etxcueN1SbVOpeLkN21l_=s1024?authuser=0',
-    description: 'Complete guide to C programming for Raspberry Pi development with practical examples.',
-    pages: 92,
-    size: '3.8 MB',
-    downloads: 3210,
-    rating: 4.6,
-    tags: ['C Programming', 'Raspberry Pi', 'Hardware'],
     created_at: '2024-01-12T15:30:00Z',
-    pdf_categories: {
-      category: 'Placement Material',
-      subcategory: 'C & DSA Notes'
-    }
+    category: 'Placement Material',
+    subcategory: 'C & DSA Notes'
   },
   {
     id: '3',
     name: 'Word Power Made Easy by Norman Lewis',
     file_link: 'https://drive.google.com/file/d/19LpQSN46RN_dt65cogaI8b4-6W9yGoVg/view?usp=sharing',
     thumbnail: 'https://lh3.googleusercontent.com/d/19LpQSN46RN_dt65cogaI8b4-6W9yGoVg=s1024?authuser=0',
-    description: 'The complete vocabulary builder that will enhance your English communication skills.',
-    pages: 420,
-    size: '12.5 MB',
-    downloads: 8950,
-    rating: 4.9,
-    tags: ['English', 'Language', 'Literature'],
     created_at: '2024-01-10T09:15:00Z',
-    pdf_categories: {
-      category: 'Placement Material',
-      subcategory: 'English'
-    }
+    category: 'Placement Material',
+    subcategory: 'English'
   }
 ];
 
@@ -69,12 +45,6 @@ export class PDFDataService {
             name,
             file_link,
             thumbnail,
-            description,
-            pages,
-            size,
-            downloads,
-            rating,
-            tags,
             created_at
           )
         `);
@@ -91,29 +61,20 @@ export class PDFDataService {
   static async getAllResources(filters = {}) {
     try {
       let query = supabase
-        .from('pdf_resources')
-        .select(`
-          *,
-          pdf_categories (
-            category,
-            subcategory
-          )
-        `);
+        .from('pdf_library_view')
+        .select('*');
 
       // Apply filters
       if (filters.category && filters.category !== 'all') {
-        query = query.eq('pdf_categories.category', filters.category);
+        query = query.eq('category', filters.category);
       }
 
       if (filters.subcategory) {
-        query = query.eq('pdf_categories.subcategory', filters.subcategory);
+        query = query.eq('subcategory', filters.subcategory);
       }
 
       if (filters.search) {
-        query = query.or(`
-          name.ilike.%${filters.search}%,
-          description.ilike.%${filters.search}%
-        `);
+        query = query.ilike('name', `%${filters.search}%`);
       }
 
       // Apply sorting
@@ -121,12 +82,6 @@ export class PDFDataService {
         switch (filters.sortBy) {
           case 'newest':
             query = query.order('created_at', { ascending: false });
-            break;
-          case 'popular':
-            query = query.order('downloads', { ascending: false });
-            break;
-          case 'rating':
-            query = query.order('rating', { ascending: false });
             break;
           case 'title':
             query = query.order('name', { ascending: true });
@@ -151,15 +106,14 @@ export class PDFDataService {
         // Apply search filter
         if (filters.search) {
           filteredData = filteredData.filter(item => 
-            item.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-            item.description.toLowerCase().includes(filters.search.toLowerCase())
+            item.name.toLowerCase().includes(filters.search.toLowerCase())
           );
         }
         
         // Apply category filter
         if (filters.category && filters.category !== 'all') {
           filteredData = filteredData.filter(item => 
-            item.pdf_categories.category === filters.category
+            item.category === filters.category
           );
         }
         
@@ -168,12 +122,6 @@ export class PDFDataService {
           switch (filters.sortBy) {
             case 'newest':
               filteredData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-              break;
-            case 'popular':
-              filteredData.sort((a, b) => b.downloads - a.downloads);
-              break;
-            case 'rating':
-              filteredData.sort((a, b) => b.rating - a.rating);
               break;
             case 'title':
               filteredData.sort((a, b) => a.name.localeCompare(b.name));
@@ -199,14 +147,8 @@ export class PDFDataService {
 
     try {
       const { data, error } = await supabase
-        .from('pdf_resources')
-        .select(`
-          *,
-          pdf_categories (
-            category,
-            subcategory
-          )
-        `)
+        .from('pdf_library_view')
+        .select('*')
         .eq('id', id)
         .single();
 
@@ -223,7 +165,7 @@ export class PDFDataService {
   static async getAllCategories() {
     // If Supabase is not configured, return fallback categories
     if (!isSupabaseConfigured()) {
-      const categories = [...new Set(fallbackData.map(item => item.pdf_categories.category))];
+      const categories = [...new Set(fallbackData.map(item => item.category))];
       return categories.map(category => ({ category, subcategory: 'All' }));
     }
 
@@ -238,34 +180,17 @@ export class PDFDataService {
     } catch (error) {
       console.error('Error fetching categories:', error);
       // Return fallback categories on error
-      const categories = [...new Set(fallbackData.map(item => item.pdf_categories.category))];
+      const categories = [...new Set(fallbackData.map(item => item.category))];
       return categories.map(category => ({ category, subcategory: 'All' }));
     }
   }
 
-  // Update download count for a resource
+  // Update download count for a resource (no longer needed, but keeping for compatibility)
   static async incrementDownloadCount(resourceId) {
-    try {
-      const { data, error } = await supabase
-        .from('pdf_resources')
-        .select('downloads')
-        .eq('id', resourceId)
-        .single();
-
-      if (error) throw error;
-
-      const currentDownloads = data.downloads || 0;
-      const { error: updateError } = await supabase
-        .from('pdf_resources')
-        .update({ downloads: currentDownloads + 1 })
-        .eq('id', resourceId);
-
-      if (updateError) throw updateError;
-      return true;
-    } catch (error) {
-      console.error('Error updating download count:', error);
-      return false;
-    }
+    // This function is no longer needed since downloads column is removed
+    // Keeping it to avoid breaking existing code that calls it
+    console.log('Download count tracking disabled - downloads column removed');
+    return true;
   }
 
   // Add a new PDF resource
@@ -276,8 +201,6 @@ export class PDFDataService {
         .insert({
           ...resource,
           category_id: categoryId,
-          downloads: 0,
-          rating: 0,
           created_at: new Date().toISOString()
         })
         .select()
@@ -318,12 +241,6 @@ export class PDFDataService {
         const resources = categoryData.resources.map(resource => ({
           ...resource,
           category_id: categoryResult.id,
-          downloads: Math.floor(Math.random() * 10000) + 1000, // Random download count
-          rating: (Math.random() * 2 + 3).toFixed(1), // Random rating 3.0-5.0
-          pages: Math.floor(Math.random() * 500) + 50, // Random page count
-          size: `${(Math.random() * 20 + 5).toFixed(1)} MB`, // Random file size
-          tags: this.generateTagsFromName(resource.name),
-          description: resource.description || `Comprehensive guide on ${resource.name}`,
           created_at: new Date().toISOString()
         }));
 
@@ -346,37 +263,10 @@ export class PDFDataService {
     }
   }
 
-  // Helper function to generate tags from resource name
+  // Helper function to generate tags from resource name (removed - no longer needed)
   static generateTagsFromName(name) {
-    const commonTags = {
-      'python': ['Python', 'Programming', 'Coding'],
-      'javascript': ['JavaScript', 'Web Development', 'Programming'],
-      'react': ['React', 'Frontend', 'Web Development'],
-      'node': ['Node.js', 'Backend', 'JavaScript'],
-      'data': ['Data Science', 'Analytics', 'Statistics'],
-      'machine learning': ['AI', 'ML', 'Data Science'],
-      'algorithm': ['Algorithms', 'Computer Science', 'Programming'],
-      'database': ['Database', 'SQL', 'Data Management'],
-      'web': ['Web Development', 'Frontend', 'Backend'],
-      'mobile': ['Mobile Development', 'Apps', 'Programming'],
-      'design': ['Design', 'UI/UX', 'Graphics'],
-      'business': ['Business', 'Management', 'Strategy'],
-      'math': ['Mathematics', 'Statistics', 'Calculus'],
-      'physics': ['Physics', 'Science', 'Theory'],
-      'english': ['English', 'Language', 'Literature']
-    };
-
-    const nameLower = name.toLowerCase();
-    let tags = [];
-
-    for (const [keyword, keywordTags] of Object.entries(commonTags)) {
-      if (nameLower.includes(keyword)) {
-        tags.push(...keywordTags);
-      }
-    }
-
-    // Remove duplicates and limit to 5 tags
-    return [...new Set(tags)].slice(0, 5);
+    // This function is no longer needed since tags column is removed
+    return [];
   }
 }
 
