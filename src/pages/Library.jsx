@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { Search, Filter, Download, Eye, Star, ChevronLeft, ChevronRight, Grid, List } from 'lucide-react';
+import { Search, Filter, Download, Eye, Star, ChevronLeft, ChevronRight, Grid, List, Info } from 'lucide-react';
+import PDFDataService from '../utils/pdfDataService.js';
+import PDFViewer from '../components/PDFViewer.jsx';
+import { isSupabaseConfigured } from '../utils/supabase.js';
 
 const Library = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -8,168 +11,74 @@ const Library = () => {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
+  const [isLoading, setIsLoading] = useState(true);
+  const [allPdfs, setAllPdfs] = useState([]);
+  const [categories, setCategories] = useState(['all']);
+  const [selectedPDF, setSelectedPDF] = useState(null);
+  const [isPDFViewerOpen, setIsPDFViewerOpen] = useState(false);
   
   const itemsPerPage = 12;
 
-  // Sample PDF data - in a real app, this would come from an API
-  const allPdfs = [
-    {
-      id: 1,
-      title: 'Introduction to Machine Learning',
-      author: 'Dr. Andrew Ng',
-      category: 'Computer Science',
-      pages: 245,
-      size: '12.5 MB',
-      rating: 4.8,
-      downloads: 15420,
-      description: 'Comprehensive guide to machine learning fundamentals and applications.',
-      tags: ['AI', 'ML', 'Python', 'Data Science']
-    },
-    {
-      id: 2,
-      title: 'Advanced Calculus and Analysis',
-      author: 'Prof. Sarah Johnson',
-      category: 'Mathematics',
-      pages: 387,
-      size: '18.2 MB',
-      rating: 4.6,
-      downloads: 8930,
-      description: 'Deep dive into advanced calculus concepts and mathematical analysis.',
-      tags: ['Calculus', 'Analysis', 'Mathematics']
-    },
-    {
-      id: 3,
-      title: 'Quantum Physics Fundamentals',
-      author: 'Dr. Michael Chen',
-      category: 'Physics',
-      pages: 456,
-      size: '22.1 MB',
-      rating: 4.9,
-      downloads: 12150,
-      description: 'Essential concepts in quantum mechanics and modern physics.',
-      tags: ['Quantum', 'Physics', 'Theory']
-    },
-    {
-      id: 4,
-      title: 'Software Engineering Principles',
-      author: 'Jane Smith',
-      category: 'Computer Science',
-      pages: 324,
-      size: '15.8 MB',
-      rating: 4.7,
-      downloads: 9876,
-      description: 'Best practices and principles for modern software development.',
-      tags: ['Software', 'Engineering', 'Programming']
-    },
-    {
-      id: 5,
-      title: 'Business Strategy and Innovation',
-      author: 'Prof. David Wilson',
-      category: 'Business',
-      pages: 298,
-      size: '11.3 MB',
-      rating: 4.5,
-      downloads: 7654,
-      description: 'Strategic approaches to business innovation and growth.',
-      tags: ['Strategy', 'Innovation', 'Business']
-    },
-    {
-      id: 6,
-      title: 'Modern Literature Analysis',
-      author: 'Dr. Emily Brown',
-      category: 'Literature',
-      pages: 412,
-      size: '16.7 MB',
-      rating: 4.4,
-      downloads: 5432,
-      description: 'Critical analysis of contemporary literary works and themes.',
-      tags: ['Literature', 'Analysis', 'Modern']
-    },
-    {
-      id: 7,
-      title: 'Data Structures and Algorithms',
-      author: 'Prof. Robert Taylor',
-      category: 'Computer Science',
-      pages: 567,
-      size: '25.4 MB',
-      rating: 4.9,
-      downloads: 18750,
-      description: 'Comprehensive guide to fundamental data structures and algorithmic thinking.',
-      tags: ['Algorithms', 'Data Structures', 'Programming']
-    },
-    {
-      id: 8,
-      title: 'Linear Algebra Essentials',
-      author: 'Dr. Maria Garcia',
-      category: 'Mathematics',
-      pages: 234,
-      size: '13.2 MB',
-      rating: 4.6,
-      downloads: 11250,
-      description: 'Essential concepts in linear algebra with practical applications.',
-      tags: ['Linear Algebra', 'Mathematics', 'Vectors']
-    },
-    {
-      id: 9,
-      title: 'Digital Marketing Strategies',
-      author: 'Sarah Adams',
-      category: 'Business',
-      pages: 289,
-      size: '14.5 MB',
-      rating: 4.3,
-      downloads: 6789,
-      description: 'Modern digital marketing techniques and social media strategies.',
-      tags: ['Marketing', 'Digital', 'Social Media']
-    },
-    {
-      id: 10,
-      title: 'Environmental Science and Sustainability',
-      author: 'Dr. Lisa Wang',
-      category: 'Environmental Science',
-      pages: 356,
-      size: '16.9 MB',
-      rating: 4.8,
-      downloads: 10567,
-      description: 'Understanding environmental challenges and sustainable solutions.',
-      tags: ['Environment', 'Sustainability', 'Science']
+  // Fetch data from Supabase on component mount
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch all resources
+      const resources = await PDFDataService.getAllResources({ sortBy });
+      setAllPdfs(resources);
+
+      // Fetch categories
+      const categoryData = await PDFDataService.getAllCategories();
+      const uniqueCategories = ['all', ...new Set(categoryData.map(cat => cat.category))];
+      setCategories(uniqueCategories);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
 
-  const categories = [
-    'all',
-    'Computer Science',
-    'Mathematics',
-    'Physics',
-    'Engineering',
-    'Business',
-    'Literature',
-    'Environmental Science'
-  ];
-
-  // Filter and search PDFs
-  const filteredPdfs = allPdfs.filter(pdf => {
-    const matchesSearch = pdf.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pdf.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         pdf.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory === 'all' || pdf.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  // Sort PDFs
-  const sortedPdfs = [...filteredPdfs].sort((a, b) => {
-    switch (sortBy) {
-      case 'newest':
-        return b.id - a.id;
-      case 'popular':
-        return b.downloads - a.downloads;
-      case 'rating':
-        return b.rating - a.rating;
-      case 'title':
-        return a.title.localeCompare(b.title);
-      default:
-        return 0;
+  // Refetch data when filters change
+  useEffect(() => {
+    if (!isLoading) {
+      fetchFilteredData();
     }
-  });
+  }, [searchTerm, selectedCategory, sortBy]);
+
+  const fetchFilteredData = async () => {
+    try {
+      const filters = {
+        search: searchTerm,
+        category: selectedCategory,
+        sortBy
+      };
+      const resources = await PDFDataService.getAllResources(filters);
+      setAllPdfs(resources);
+    } catch (error) {
+      console.error('Error fetching filtered data:', error);
+    }
+  };
+
+  const handleViewPDF = (pdf) => {
+    setSelectedPDF(pdf);
+    setIsPDFViewerOpen(true);
+  };
+
+  const handleClosePDFViewer = () => {
+    setIsPDFViewerOpen(false);
+    setSelectedPDF(null);
+  };
+
+  const handlePDFResourceChange = (newResource) => {
+    setSelectedPDF(newResource);
+  };
+  // The filtering is already handled by PDFDataService, so we just use the data directly
+  const filteredPdfs = allPdfs;
+  const sortedPdfs = [...filteredPdfs];
 
   // Pagination
   const totalPages = Math.ceil(sortedPdfs.length / itemsPerPage);
@@ -205,6 +114,26 @@ const Library = () => {
             Explore our vast collection of educational resources and find the perfect PDF for your learning journey.
           </p>
         </motion.div>
+
+        {/* Demo Mode Notification */}
+        {!isSupabaseConfigured() && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mb-8 p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg backdrop-blur-lg"
+          >
+            <div className="flex items-center gap-3 text-blue-300">
+              <Info className="h-5 w-5 flex-shrink-0" />
+              <div>
+                <p className="font-medium">Demo Mode Active</p>
+                <p className="text-sm text-blue-200">
+                  You're viewing sample data. To use your own PDFs, configure Supabase in your .env file.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Search and Filters */}
         <motion.div
@@ -348,17 +277,22 @@ const Library = () => {
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        onClick={() => handleViewPDF(pdf)}
                         className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors"
                       >
-                        <Download className="h-4 w-4" />
-                        Download
+                        <Eye className="h-4 w-4" />
+                        View
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          const downloadLink = `https://drive.google.com/uc?export=download&id=${pdf.file_link.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]}`;
+                          window.open(downloadLink, '_blank');
+                        }}
                         className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
                       >
-                        <Eye className="h-4 w-4" />
+                        <Download className="h-4 w-4" />
                       </motion.button>
                     </div>
                   </div>
@@ -402,17 +336,22 @@ const Library = () => {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
+                          onClick={() => handleViewPDF(pdf)}
                           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors"
                         >
-                          <Download className="h-4 w-4" />
-                          Download
+                          <Eye className="h-4 w-4" />
+                          View
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            const downloadLink = `https://drive.google.com/uc?export=download&id=${pdf.file_link.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]}`;
+                            window.open(downloadLink, '_blank');
+                          }}
                           className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Download className="h-4 w-4" />
                         </motion.button>
                       </div>
                     </div>
@@ -477,6 +416,37 @@ const Library = () => {
           </motion.div>
         )}
       </div>
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center text-white">
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-lg">Loading PDFs...</p>
+          </div>
+        </div>
+      )}
+
+      {/* No Results State */}
+      {!isLoading && sortedPdfs.length === 0 && (
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center text-white">
+            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="h-8 w-8" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">No PDFs Found</h3>
+            <p className="text-gray-400">Try adjusting your search terms or filters</p>
+          </div>
+        </div>
+      )}
+
+      {/* PDF Viewer Modal */}
+      <PDFViewer
+        isOpen={isPDFViewerOpen}
+        onClose={handleClosePDFViewer}
+        pdfResource={selectedPDF}
+        onResourceChange={handlePDFResourceChange}
+      />
     </div>
   );
 };
