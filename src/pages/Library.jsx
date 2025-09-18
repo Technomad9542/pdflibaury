@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { Search, Filter, Download, Eye, Star, ChevronLeft, ChevronRight, Grid, List, Info } from 'lucide-react';
+import { Search, Filter, Download, Eye, Star, ChevronLeft, ChevronRight, Grid, List, Info, BookOpen } from 'lucide-react';
 import PDFDataService from '../utils/pdfDataService.js';
 import PDFViewer from '../components/PDFViewer.jsx';
 import { isSupabaseConfigured } from '../utils/supabase.js';
@@ -179,8 +179,6 @@ const Library = () => {
                 className="px-4 py-2 bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
               >
                 <option value="newest" className="bg-dark-300 text-white">Newest First</option>
-                <option value="popular" className="bg-dark-300 text-white">Most Popular</option>
-                <option value="rating" className="bg-dark-300 text-white">Highest Rated</option>
                 <option value="title" className="bg-dark-300 text-white">Alphabetical</option>
               </select>
             </div>
@@ -239,11 +237,24 @@ const Library = () => {
                 <>
                   {/* Thumbnail */}
                   <div className="aspect-[3/4] bg-gradient-to-br from-blue-500/20 to-purple-600/20 relative overflow-hidden">
+                    {pdf.thumbnail ? (
+                      <img 
+                        src={pdf.thumbnail} 
+                        alt={pdf.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white/50">
+                        <BookOpen className="h-16 w-16" />
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
                     <div className="absolute bottom-4 left-4 right-4 z-20">
-                      <div className="flex items-center text-yellow-400 mb-2">
-                        <Star className="h-4 w-4 fill-current mr-1" />
-                        <span className="text-sm font-medium">{pdf.rating}</span>
+                      <div className="text-white text-sm font-medium">
+                        {pdf.category}
                       </div>
                     </div>
                   </div>
@@ -251,25 +262,13 @@ const Library = () => {
                   {/* Content */}
                   <div className="p-6">
                     <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
-                      {pdf.title}
+                      {pdf.name}
                     </h3>
-                    <p className="text-gray-400 text-sm mb-3">{pdf.author}</p>
-                    <p className="text-gray-300 text-sm mb-4 line-clamp-2">{pdf.description}</p>
+                    <p className="text-gray-400 text-sm mb-3">{pdf.category} • {pdf.subcategory}</p>
                     
-                    {/* Metadata */}
-                    <div className="flex items-center justify-between text-xs text-gray-400 mb-4">
-                      <span>{pdf.pages} pages</span>
-                      <span>{pdf.size}</span>
-                      <span>{pdf.downloads.toLocaleString()} downloads</span>
-                    </div>
-                    
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {pdf.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full">
-                          {tag}
-                        </span>
-                      ))}
+                    {/* Creation Date */}
+                    <div className="text-xs text-gray-400 mb-4">
+                      <span>Added: {new Date(pdf.created_at).toLocaleDateString()}</span>
                     </div>
                     
                     {/* Actions */}
@@ -300,36 +299,42 @@ const Library = () => {
               ) : (
                 /* List View */
                 <div className="flex gap-6 p-6">
-                  <div className="w-24 h-32 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-lg flex-shrink-0" />
+                  <div className="w-24 h-32 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-lg flex-shrink-0 overflow-hidden">
+                    {pdf.thumbnail ? (
+                      <img 
+                        src={pdf.thumbnail} 
+                        alt={pdf.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white/50">
+                        <BookOpen className="h-8 w-8" />
+                      </div>
+                    )}
+                  </div>
                   
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
-                        {pdf.title}
+                        {pdf.name}
                       </h3>
-                      <div className="flex items-center text-yellow-400">
-                        <Star className="h-4 w-4 fill-current mr-1" />
-                        <span className="text-sm font-medium">{pdf.rating}</span>
+                      <div className="text-gray-400 text-sm">
+                        {pdf.category}
                       </div>
                     </div>
                     
-                    <p className="text-gray-400 mb-2">{pdf.author}</p>
-                    <p className="text-gray-300 mb-3">{pdf.description}</p>
+                    <p className="text-gray-400 mb-2">{pdf.category} • {pdf.subcategory}</p>
                     
-                    <div className="flex items-center gap-4 text-sm text-gray-400 mb-3">
-                      <span>{pdf.category}</span>
-                      <span>{pdf.pages} pages</span>
-                      <span>{pdf.size}</span>
-                      <span>{pdf.downloads.toLocaleString()} downloads</span>
+                    <div className="text-sm text-gray-400 mb-3">
+                      <span>Added: {new Date(pdf.created_at).toLocaleDateString()}</span>
                     </div>
                     
                     <div className="flex items-center justify-between">
-                      <div className="flex flex-wrap gap-1">
-                        {pdf.tags.slice(0, 4).map(tag => (
-                          <span key={tag} className="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full">
-                            {tag}
-                          </span>
-                        ))}
+                      <div className="text-gray-500">
+                        {/* Space for future metadata */}
                       </div>
                       
                       <div className="flex gap-2">

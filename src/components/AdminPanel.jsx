@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Upload, Database, BarChart, Save, AlertCircle } from 'lucide-react';
+import { Plus, Upload, Database, BarChart, Save, AlertCircle, X } from 'lucide-react';
 import AdminDataService from '../utils/adminDataService.js';
 
 const AdminPanel = ({ onClose }) => {
@@ -8,16 +8,14 @@ const AdminPanel = ({ onClose }) => {
   const [stats, setStats] = useState({ totalCategories: 0, totalResources: 0 });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [bulkJsonData, setBulkJsonData] = useState('');
   
   // Form data for adding new PDF
   const [formData, setFormData] = useState({
     name: '',
     category: '',
     subcategory: '',
-    file_link: '',
-    description: '',
-    pages: '',
-    size: ''
+    file_link: ''
   });
 
   useEffect(() => {
@@ -50,10 +48,7 @@ const AdminPanel = ({ onClose }) => {
         name: '',
         category: '',
         subcategory: '',
-        file_link: '',
-        description: '',
-        pages: '',
-        size: ''
+        file_link: ''
       });
       loadStats();
     } catch (error) {
@@ -67,27 +62,82 @@ const AdminPanel = ({ onClose }) => {
     setLoading(true);
     setMessage('');
 
-    // Example bulk data - you can modify this
-    const bulkData = [
-      {
-        name: 'Advanced JavaScript Concepts',
-        category: 'Computer Science',
-        subcategory: 'Web Development',
-        file_link: 'https://drive.google.com/file/d/YOUR_FILE_ID/view?usp=sharing',
-        description: 'Deep dive into advanced JavaScript programming concepts'
-      },
-      {
-        name: 'Data Structures and Algorithms',
-        category: 'Computer Science',
-        subcategory: 'Programming',
-        file_link: 'https://drive.google.com/file/d/YOUR_FILE_ID2/view?usp=sharing',
-        description: 'Comprehensive guide to DSA for interviews'
-      }
-    ];
-
     try {
-      const result = await AdminDataService.bulkAddPDFs(bulkData);
-      setMessage(`✅ Bulk add completed: ${result.success} successful, ${result.failed} failed`);
+      let dataToProcess;
+      
+      if (bulkJsonData.trim()) {
+        // Use user-provided JSON data
+        try {
+          dataToProcess = JSON.parse(bulkJsonData);
+        } catch (parseError) {
+          throw new Error('Invalid JSON format. Please check your JSON syntax.');
+        }
+      } else {
+        // Use example data if no JSON provided
+        dataToProcess = [
+          {
+            "category": "Computer Science",
+            "subcategory": "Programming",
+            "resources": [
+              {
+                "name": "Advanced JavaScript Concepts",
+                "file_link": "https://drive.google.com/file/d/EXAMPLE_FILE_ID1/view?usp=sharing",
+                "thumbnail": "https://lh3.googleusercontent.com/d/EXAMPLE_FILE_ID1=s1024?authuser=0"
+              },
+              {
+                "name": "Data Structures and Algorithms",
+                "file_link": "https://drive.google.com/file/d/EXAMPLE_FILE_ID2/view?usp=sharing",
+                "thumbnail": "https://lh3.googleusercontent.com/d/EXAMPLE_FILE_ID2=s1024?authuser=0"
+              }
+            ]
+          }
+        ];
+      }
+
+      // Process the data
+      const results = [];
+      const errors = [];
+      
+      for (const categoryGroup of dataToProcess) {
+        const { category, subcategory, resources } = categoryGroup;
+        
+        if (!category || !subcategory || !resources || !Array.isArray(resources)) {
+          errors.push({ 
+            category: category || 'Unknown', 
+            error: 'Invalid category structure. Missing category, subcategory, or resources array.' 
+          });
+          continue;
+        }
+        
+        for (const resource of resources) {
+          try {
+            const pdfData = {
+              name: resource.name,
+              category: category,
+              subcategory: subcategory,
+              file_link: resource.file_link,
+              thumbnail: resource.thumbnail
+            };
+            
+            const result = await AdminDataService.addNewPDF(pdfData);
+            results.push(result);
+          } catch (error) {
+            errors.push({ 
+              pdf: resource.name || 'Unknown', 
+              error: error.message 
+            });
+          }
+        }
+      }
+      
+      let resultMessage = `✅ Bulk add completed: ${results.length} successful`;
+      if (errors.length > 0) {
+        resultMessage += `, ${errors.length} failed`;
+        console.log('Errors:', errors);
+      }
+      
+      setMessage(resultMessage);
+      setBulkJsonData(''); // Clear the textarea on success
       loadStats();
     } catch (error) {
       setMessage(`❌ Bulk add error: ${error.message}`);
@@ -114,9 +164,9 @@ const AdminPanel = ({ onClose }) => {
           <h2 className="text-2xl font-bold text-white">Admin Panel</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white"
           >
-            <AlertCircle className="h-6 w-6 text-gray-400" />
+            <X className="h-6 w-6" />
           </button>
         </div>
 
@@ -235,45 +285,6 @@ const AdminPanel = ({ onClose }) => {
                   placeholder="e.g., Web Development"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Pages (optional)
-                </label>
-                <input
-                  type="number"
-                  name="pages"
-                  value={formData.pages}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., 150"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  File Size (optional)
-                </label>
-                <input
-                  type="text"
-                  name="size"
-                  value={formData.size}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., 5.2 MB"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Description
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={3}
-                className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Brief description of the PDF content..."
-              />
             </div>
             <button
               type="submit"
@@ -288,20 +299,74 @@ const AdminPanel = ({ onClose }) => {
 
         {/* Bulk Add Tab */}
         {activeTab === 'bulk' && (
-          <div className="space-y-4">
+          <div className="space-y-6">
+            <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-4">
+              <h3 className="text-blue-300 font-medium mb-2">JSON Bulk Import</h3>
+              <p className="text-blue-200 text-sm mb-3">
+                Paste your JSON data in the format provided. Leave empty to use example data.
+              </p>
+              <details className="mb-3">
+                <summary className="text-blue-300 cursor-pointer text-sm hover:text-blue-200">
+                  📄 View Expected JSON Format
+                </summary>
+                <pre className="mt-2 text-xs text-gray-300 bg-black/30 p-3 rounded overflow-x-auto">
+{`[
+  {
+    "category": "Category Name",
+    "subcategory": "Subcategory Name",
+    "resources": [
+      {
+        "name": "PDF Title",
+        "file_link": "https://drive.google.com/file/d/FILE_ID/view?usp=sharing",
+        "thumbnail": "https://lh3.googleusercontent.com/d/FILE_ID=s1024?authuser=0"
+      }
+    ]
+  }
+]`}
+                </pre>
+              </details>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                JSON Data (optional)
+              </label>
+              <textarea
+                value={bulkJsonData}
+                onChange={(e) => setBulkJsonData(e.target.value)}
+                rows={12}
+                className="w-full px-3 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                placeholder={`Paste your JSON data here, e.g.:
+[
+  {
+    "category": "Computer Science",
+    "subcategory": "Programming",
+    "resources": [
+      {
+        "name": "Your PDF Title",
+        "file_link": "https://drive.google.com/file/d/YOUR_FILE_ID/view?usp=sharing",
+        "thumbnail": "https://lh3.googleusercontent.com/d/YOUR_FILE_ID=s1024?authuser=0"
+      }
+    ]
+  }
+]`}
+              />
+            </div>
+            
             <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4">
-              <p className="text-yellow-300">
-                <strong>Note:</strong> Modify the bulk data in the code to add multiple PDFs at once.
-                This is useful for initial setup or large imports.
+              <p className="text-yellow-300 text-sm">
+                ⚠️ <strong>Note:</strong> If no JSON is provided, example data will be used for demonstration.
+                Make sure your Google Drive links are publicly accessible.
               </p>
             </div>
+            
             <button
               onClick={handleBulkAdd}
               disabled={loading}
-              className="w-full px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+              className="w-full px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              <Upload className="h-5 w-5 inline mr-2" />
-              {loading ? 'Processing Bulk Add...' : 'Run Bulk Add'}
+              <Upload className="h-5 w-5" />
+              {loading ? 'Processing Bulk Import...' : 'Import PDFs from JSON'}
             </button>
           </div>
         )}
