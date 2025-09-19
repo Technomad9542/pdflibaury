@@ -84,31 +84,32 @@ ALTER TABLE pdf_resources ENABLE ROW LEVEL SECURITY;
 -- ===============================================
 
 -- Allow everyone to read data (public access)
-CREATE POLICY "Public read access for pdf_categories" ON pdf_categories
+CREATE POLICY "Enable read access for all users" ON pdf_categories
   FOR SELECT USING (true);
 
-CREATE POLICY "Public read access for pdf_resources" ON pdf_resources
+CREATE POLICY "Enable read access for all users" ON pdf_resources
   FOR SELECT USING (true);
 
--- Allow authenticated users to insert/update data
-CREATE POLICY "Authenticated users can insert categories" ON pdf_categories
-  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+-- Allow INSERT operations for admin functionality
+CREATE POLICY "Enable insert for all users" ON pdf_categories
+  FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Authenticated users can insert resources" ON pdf_resources
-  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Enable insert for all users" ON pdf_resources
+  FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Authenticated users can update categories" ON pdf_categories
-  FOR UPDATE USING (auth.role() = 'authenticated');
+-- Allow UPDATE operations for admin functionality
+CREATE POLICY "Enable update for all users" ON pdf_categories
+  FOR UPDATE USING (true);
 
-CREATE POLICY "Authenticated users can update resources" ON pdf_resources
-  FOR UPDATE USING (auth.role() = 'authenticated');
+CREATE POLICY "Enable update for all users" ON pdf_resources
+  FOR UPDATE USING (true);
 
--- Allow authenticated users to delete (optional)
-CREATE POLICY "Authenticated users can delete categories" ON pdf_categories
-  FOR DELETE USING (auth.role() = 'authenticated');
+-- Allow DELETE operations for admin functionality
+CREATE POLICY "Enable delete for all users" ON pdf_categories
+  FOR DELETE USING (true);
 
-CREATE POLICY "Authenticated users can delete resources" ON pdf_resources
-  FOR DELETE USING (auth.role() = 'authenticated');
+CREATE POLICY "Enable delete for all users" ON pdf_resources
+  FOR DELETE USING (true);
 
 -- ===============================================
 -- 7. INSERT YOUR SAMPLE DATA
