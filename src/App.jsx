@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Library from './pages/Library';
+import Welcome from './pages/Welcome';
+import CheatSheets from './pages/CheatSheets';
+import CheatSheet from './pages/CheatSheet';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -49,6 +52,11 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/welcome" element={
+              <ProtectedRoute>
+                <Welcome />
+              </ProtectedRoute>
+            } />
             <Route path="/library" element={
               <ProtectedRoute>
                 <Library />
@@ -57,6 +65,16 @@ function App() {
             <Route path="/search" element={
               <ProtectedRoute>
                 <Library />
+              </ProtectedRoute>
+            } />
+            <Route path="/cheatsheets" element={
+              <ProtectedRoute>
+                <CheatSheets />
+              </ProtectedRoute>
+            } />
+            <Route path="/cheatsheet/:id" element={
+              <ProtectedRoute>
+                <CheatSheet />
               </ProtectedRoute>
             } />
           </Routes>

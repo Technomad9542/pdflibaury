@@ -1,17 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../utils/supabase.js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function useAuth() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialLoadRef = useRef(true);
 
   useEffect(() => {
     // Check active session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
+      initialLoadRef.current = false;
     });
 
     // Listen for auth changes
@@ -19,14 +22,15 @@ export default function useAuth() {
       setUser(session?.user ?? null);
       setLoading(false);
       
-      // Redirect to library after successful login
-      if (_event === 'SIGNED_IN' && session?.user) {
-        navigate('/library');
+      // Redirect to welcome page only on initial sign-in from home page
+      if (_event === 'SIGNED_IN' && session?.user && 
+          (location.pathname === '/' || location.pathname === '')) {
+        navigate('/welcome');
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, location]);
 
   const signInWithGoogle = async () => {
     setLoading(true);
@@ -34,7 +38,7 @@ export default function useAuth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/library`
+          redirectTo: `${window.location.origin}/welcome`
         }
       });
       
@@ -49,6 +53,7 @@ export default function useAuth() {
     try {
       await supabase.auth.signOut();
       setUser(null);
+      navigate('/');
     } catch (error) {
       console.error('Error signing out:', error);
     }

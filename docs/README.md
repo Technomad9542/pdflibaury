@@ -10,6 +10,7 @@ A modern, responsive digital library application built with React, Vite, and Sup
 - 📱 **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 - 🎨 **Modern UI**: Beautiful dark-themed interface with animations and gradients
 - 🔐 **Google OAuth Authentication**: Secure login with Google accounts
+- 🏠 **Welcome Dashboard**: Aesthetic landing page for logged-in users
 - 🔒 **Protected Routes**: Library and search pages only accessible to authenticated users
 - 👤 **Role-based Access**: Admin panel only accessible to users with emails in the admin_users table
 - ⚙️ **Admin Panel**: Easy management of PDF resources and categories

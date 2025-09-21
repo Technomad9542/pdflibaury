@@ -1,0 +1,11 @@
+{
+  "id": "arduino",
+  "title": "Arduino IDE",
+  "intro": "|\nA visual cheat-sheet for the 12 keyboard shortcuts found in the Arduino IDE",
+  "tags": [],
+  "categories": [
+    "Keyboard Shortcuts"
+  ],
+  "background": "bg-[#409096]",
+  "content": "## Keyboard Shortcuts\n\n### General\n\n| Shortcut           | Action                           |\n| ------------------ | -------------------------------- |\n| `Ctrl` `S`         | Save                             |\n| `Ctrl` `Shift` `S` | Save as                          |\n| `Ctrl` `N`         | Open a new sketch                |\n| `Ctrl` `O`         | Open an existing sketch          |\n| `Ctrl` `Q`         | Close the Arduino IDE            |\n| `Ctrl` `R`         | Verify                           |\n| `Ctrl` `U`         | Upload                           |\n| `Ctrl` `F`         | Find                             |\n| `Ctrl` `T`         | Adjust the alignment and spacing |\n| `Ctrl` `/`         | Comment                          |\n| `Ctrl` `Shift` `M` | Open the serial monitor          |\n| `Ctrl` `K`         | Open the sketch folder           |\n\n{.shortcuts}\n\n## Also see\n\n- [Keyboard shortcuts for the Arduino IDE](https://progtpoint.blogspot.com/2017/02/arduino-keyboard-shortcuts.html)\n  _(progtpoint.blogspot.com)_\n"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "sdkman",
+  "title": "SDKMAN!",
+  "intro": "|\nThis cheatsheet provides the most commonly used SDKMAN! command line instructions",
+  "tags": [
+    "command",
+    "software development kits",
+    "sdk"
+  ],
+  "categories": [
+    "Linux Command"
+  ],
+  "background": "bg-[#cf5e3c]",
+  "content": "## Getting Started {.cols-2}\n\n### Installing SDKMAN!\n\nDownload SDKMAN!\n\n```shell script\n$ curl -s \"https://get.sdkman.io\" | bash\n```\n\nInstall SDKMAN!\n\n```shell script\n$ source \"$HOME/.sdkman/bin/sdkman-init.sh\"\n```\n\nCheck the version\n\n```shell script\n$ sdk version\n```\n\nUpdate\n\n```shell script\n$ sdk update\n```\n\nHelp\n\n```shell script\n$ sdk help\n```\n\n### Installing and managing candidates {.row-span-2}\n\nList all candidates\n\n```shell script\n$ sdk list\n```\n\nList versions of a candidate\n\n```shell script\n$ sdk list <candidate>\n```\n\nInstall a candidate with the latest version\n\n```shell script\n$ sdk install <candidate>\n```\n\nInstall a candidate with specific version\n\n```shell script\n$ sdk install <candidate> <version>\n```\n\nTemporarily switch between versions\n\n```shell script\n$ sdk use <candidate> <version>\n```\n\nPermanently switch to version\n\n```shell script\n$ sdk default <candidate> <version>\n```\n\nDisplay specific candidate version in use\n\n```shell script\n$ sdk current <candidate>\n```\n\nDisplay all candidates versions in use\n\n```shell script\n$ sdk current\n```\n\nRemove a candidate\n\n```shell script\n$ sdk uninstall <candidate> <version>\n```\n"
+}
