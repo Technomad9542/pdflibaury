@@ -3,6 +3,27 @@ import { supabase } from './supabase.js';
 // Admin service for managing PDF library data
 export class AdminDataService {
   
+  // Check if user is admin
+  static async isUserAdmin(userEmail) {
+    try {
+      const { data, error } = await supabase
+        .from('admin_users')
+        .select('email')
+        .eq('email', userEmail)
+        .single();
+
+      if (error) {
+        console.error('Error checking admin status:', error);
+        return false;
+      }
+
+      return !!data;
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      return false;
+    }
+  }
+  
   // Add a new PDF with automatic category creation
   static async addNewPDF(pdfData) {
     try {
