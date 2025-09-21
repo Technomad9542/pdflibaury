@@ -1,4 +1,4 @@
-import { insertSampleData } from './src/data/sampleData.js';
+import { insertSampleData } from '../src/data/sampleData.js';
 
 // Function to insert your data - call this after setting up environment variables
 async function setupDatabase() {

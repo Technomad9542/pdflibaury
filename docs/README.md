@@ -61,6 +61,9 @@ To enable Google authentication, follow the instructions in [GOOGLE-OAUTH-SETUP.
 - `src/utils/` - Utility functions and services
 - `src/hooks/` - Custom React hooks
 - `src/data/` - Sample data for demo mode
+- `sql/` - Database setup and migration scripts
+- `supabase/` - Supabase-related utilities and setup scripts
+- `docs/` - Project documentation and guides
 
 ## Technologies Used
 
