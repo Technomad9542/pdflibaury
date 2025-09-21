@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Library from './pages/Library';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -48,8 +49,16 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/library" element={<Library />} />
-            <Route path="/search" element={<Library />} />
+            <Route path="/library" element={
+              <ProtectedRoute>
+                <Library />
+              </ProtectedRoute>
+            } />
+            <Route path="/search" element={
+              <ProtectedRoute>
+                <Library />
+              </ProtectedRoute>
+            } />
           </Routes>
         </main>
       </div>
