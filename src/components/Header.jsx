@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, Search, Menu, X, Sparkles, Zap, Settings, User } from 'lucide-react';
+import { BookOpen, Search, Menu, X, Settings, User } from 'lucide-react';
 import AdminPanel from './AdminPanel';
 import useAuth from '../hooks/useAuth';
 import AdminDataService from '../utils/adminDataService';
@@ -48,18 +48,8 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Function to handle navigation to protected routes
-  const handleProtectedNavigation = (path) => {
-    if (user) {
-      navigate(path);
-    } else {
-      // If not logged in, show login prompt or redirect to login
-      signInWithGoogle();
-    }
-  };
-
   const navItems = [
-    { name: 'Home', path: '/', icon: Sparkles },
+    { name: 'Home', path: '/', icon: BookOpen },
     { name: 'Library', path: '/library', icon: BookOpen, protected: true },
     { name: 'Search', path: '/search', icon: Search, protected: true },
   ];

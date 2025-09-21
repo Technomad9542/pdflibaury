@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Download, BookOpen, Star, Zap, Search, Users, TrendingUp } from 'lucide-react';
+import { ArrowRight, Download, BookOpen, Zap, Search, Users } from 'lucide-react';
 
 const Home = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
