@@ -1,0 +1,15 @@
+{
+  "id": "htmx",
+  "title": "HTMX",
+  "intro": "|\nA modern, minimal JavaScript library that allows you to create dynamic web interfaces using HTML attributes.",
+  "tags": [
+    "frontend",
+    "javascript",
+    "htmx"
+  ],
+  "categories": [
+    "Programming"
+  ],
+  "background": "bg-[#ff5f4d]",
+  "content": "## Getting Started {.cols-3}\n\n### CDN Import\n\n```html\n<script src=\"https://unpkg.com/htmx.org@1.9.2\"></script>\n```\n\n### Basic Usage\n\n```html\n<button hx-get=\"/hello\" hx-target=\"#result\">Say Hi</button>\n<div id=\"result\"></div>\n```\n\n### Server Response\n\n```html\n<!-- /hello response -->\n<p>Hello from server</p>\n```\n\n## Core Attributes {.cols-3}\n\n### `hx-get`, `hx-post`, etc.\n\n```html\n<a hx-get=\"/page\">Load Page</a>\n<form hx-post=\"/submit\"></form>\n```\n\n### `hx-target`\n\n```html\n<button hx-get=\"/data\" hx-target=\"#box\"></button>\n<div id=\"box\"></div>\n```\n\n### `hx-trigger`\n\n```html\n<input\n  hx-get=\"/search\"\n  hx-trigger=\"keyup changed delay:300ms\"\n  hx-target=\"#results\"\n/>\n```\n\n## Swap & Out of Band {.cols-3}\n\n### `hx-swap`\n\n```html\n<div hx-get=\"/frag\" hx-swap=\"innerHTML\"></div>\n```\n\n- `outerHTML`\n- `innerHTML`\n- `beforebegin`, `afterbegin`, etc.\n\n### `hx-swap-oob`\n\n```html\n<div hx-swap-oob=\"true\" id=\"msg\"></div>\n```\n\n_Useful for global updates from partials._\n\n### Swap Modifiers\n\n```html\nhx-swap=\"outerHTML transition:true swap:1s\"\n```\n\n## Forms & Events {.cols-3}\n\n### Auto POST on Submit\n\n```html\n<form hx-post=\"/submit\" hx-target=\"#status\">\n  <input name=\"name\" />\n  <button type=\"submit\">Send</button>\n</form>\n<div id=\"status\"></div>\n```\n\n### `hx-include`\n\n```html\n<input id=\"user-id\" name=\"id\" />\n<button hx-post=\"/update\" hx-include=\"#user-id\">Update</button>\n```\n\n### `hx-vals`\n\n```html\n<button hx-post=\"/save\" hx-vals='{\"id\": 42, \"active\": true}'>Save</button>\n```\n\n## Advanced Features {.cols-3}\n\n### Loading Indicator\n\n```html\n<button hx-get=\"/load\" hx-indicator=\"#spinner\">Load</button>\n<div id=\"spinner\" class=\"htmx-indicator\">Loading...</div>\n```\n\n### `hx-push-url`\n\n```html\n<a hx-get=\"/page\" hx-push-url=\"true\">Go</a>\n```\n\n### Polling\n\n```html\n<div hx-get=\"/time\" hx-trigger=\"every 5s\"></div>\n```\n\n## Events & Extensions {.cols-3}\n\n### Listen to Events\n\n```js\ndocument.body.addEventListener('htmx:afterSwap', (e) => {\n  console.log('Swap complete');\n});\n```\n\n### Event Hooks\n\n- `htmx:beforeRequest`\n- `htmx:afterSwap`\n- `htmx:responseError`\n\n### Extensions\n\n```html\n<script src=\"https://unpkg.com/htmx.org/dist/ext/json-enc.js\"></script>\n<form hx-post=\"/api\" hx-ext=\"json-enc\"></form>\n```\n\n## Example Use Case {.cols-2}\n\n### Python Backend (Flask)\n\n```python\n@app.route(\"/hello\")\ndef hello():\n    return \"<p>Hello, HTMX!</p>\"\n```\n\n### HTML Client\n\n```html\n<button hx-get=\"/hello\" hx-target=\"#msg\">Click</button>\n<div id=\"msg\"></div>\n```\n"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "pandoc",
+  "title": "Pandoc",
+  "intro": "|\n[Pandoc](https://pandoc.org) is a document converter, this pandoc cheat sheet contains pandoc commands and some common pandoc tricks.",
+  "tags": [
+    "convert",
+    "document",
+    "utility"
+  ],
+  "categories": [
+    "Linux Command"
+  ],
+  "background": "bg-red-400",
+  "content": "## Getting Started\n\n### Pandoc Usage\n\nSyntax\n\n```shell script\n$ pandoc -s [source file] -o [output file]\n```\n\n## Pandoc examples\n\n### LaTeX to MS Word {.col-span-2}\n\nSimple .tex to .docx\n\n```shell script\n$ pandoc -s file.tex -o file.docx\n```\n\n.tex to .docx with default citations\n\n```shell script\n$ pandoc -s file.tex --citeproc --bibliography=bib_library.bib -o file.docx\n```\n\n.tex to .docx with specific citations\n\n```shell script\n$ pandoc -s file.tex --citeproc --bibliography=bib_library.bib --csl=apa.csl -o file.docx\n```\n\nGet `.csl` file from [here](https://github.com/citation-style-language/styles)\n\n.tex to .docx with cross references\n\n```shell script\n$ pandoc -s file.tex --filter pandoc-crossref -o file.docx\n```\n\nGet the filter `pandoc-crossref` from [here](https://github.com/lierdakil/pandoc-crossref/releases)\n\n## Also see {.cols-1}\n\n- [pandoc examples](https://pandoc.org/demos.html)\n"
+}

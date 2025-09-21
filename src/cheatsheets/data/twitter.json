@@ -1,0 +1,11 @@
+{
+  "id": "twitter",
+  "title": "Twitter",
+  "intro": "|\nA visual cheat-sheet for the 26 keyboard shortcuts found on Twitter",
+  "tags": [],
+  "categories": [
+    "Keyboard Shortcuts"
+  ],
+  "background": "bg-[#4894e2]",
+  "content": "## Keyboard Shortcuts\n\n### Actions\n\n| Shortcut       | Action             |\n| -------------- | ------------------ |\n| `N`            | New tweet          |\n| `L`            | Like tweet         |\n| `R`            | Reply to tweet     |\n| `T`            | Retweet            |\n| `M`            | Direct message     |\n| `U`            | Mute account       |\n| `B`            | Block account      |\n| `Enter`        | Open tweet details |\n| `O`            | Expand photos      |\n| `/`            | Search             |\n| `Ctrl` `Enter` | Send tweet         |\n\n{.shortcuts}\n\n### Navigation\n\n| Shortcut | Action             |\n| -------- | ------------------ |\n| `?`      | Full keyboard menu |\n| `J`      | Next tweet         |\n| `K`      | Previous tweet     |\n| `Space`  | Page down          |\n| `.`      | Load new tweets    |\n\n{.shortcuts}\n\n### Timelines\n\n| Shortcut | Action                  |\n| -------- | ----------------------- |\n| `G` `N`  | Home timeline           |\n| `G` `O`  | Moments                 |\n| `G` `N`  | Notifications tab       |\n| `G` `R`  | Mentions                |\n| `G` `P`  | Profile                 |\n| `G` `L`  | Likes tab               |\n| `G` `I`  | Lists tab               |\n| `G` `M`  | Direct messages         |\n| `G` `S`  | Settings and privacy    |\n| `G` `U`  | Go to someone's profile |\n\n{.shortcuts}\n\n## Also see\n\n- [Keyboard shortcuts for Twitter](https://help.twitter.com/en/using-twitter/how-to-tweet) _(help.twitter.com)_\n"
+}

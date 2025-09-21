@@ -1,0 +1,11 @@
+{
+  "id": "monday",
+  "title": "Monday.com",
+  "intro": "|\nA visual cheat-sheet for the 24 keyboard shortcuts found on Monday.com",
+  "tags": [],
+  "categories": [
+    "Keyboard Shortcuts"
+  ],
+  "background": "bg-[#f7ce46]",
+  "content": "## Keyboard Shortcuts\n\n### System\n\n| Shortcut   | Action                                    |\n| ---------- | ----------------------------------------- |\n| `Ctrl` `B` | Bolt Switch (quick switch between boards) |\n| `Esc`      | Close Item Page                           |\n| `Esc`      | Close Dialogs                             |\n| `Esc`      | Close Search                              |\n\n{.shortcuts}\n\n### Board I\n\n| Shortcut      | Action                   |\n| ------------- | ------------------------ |\n| `Down`        | Navigate Down            |\n| `Up`          | Navigate Up              |\n| `Left`        | Navigate Left            |\n| `Right`       | Navigate Right           |\n| `Tab`         | Navigate to Next Cell    |\n| `Shift` `Tab` | Navigate to Previous Tab |\n| `Enter`       | Edit Cell Content        |\n| `Backspace`   | Clear Cell Content       |\n| `Space`       | Open Column View         |\n\n{.shortcuts}\n\n### Board II\n\n| Shortcut           | Action                     |\n| ------------------ | -------------------------- |\n| `Ctrl` `F`         | Search Board               |\n| `Ctrl` `C`         | Copy Cell Content          |\n| `Ctrl` `V`         | Paste Cell Content         |\n| `Ctrl` `X`         | Cut Cell Content           |\n| `Ctrl` `Enter`     | Select Item                |\n| `Shift` `Enter`    | Select Range of Items      |\n| `Ctrl` `Shift` `G` | Create New Group           |\n| `Ctrl` `Shift` `C` | Create New Column          |\n| `Ctrl` `L`         | Open Activity Log          |\n| `Ctrl` `(click)`   | Sort Another Column        |\n| `Ctrl` `G`         | Collapse/Expand All Groups |\n\n{.shortcuts}\n\n## Also see\n\n- [Keyboard shortcuts for Monday.com](https://support.monday.com/hc/en-us/articles/115005339905-The-Spreadsheet-capabilities-shortcuts-)\n  _(support.monday.com)_\n"
+}

@@ -168,7 +168,7 @@ const Header = () => {
                 <div className="flex items-center space-x-2 bg-white/5 backdrop-blur-lg rounded-lg px-3 py-2">
                   <User className="h-5 w-5 text-blue-400" />
                   <span className="text-white text-sm font-medium">
-                    {user.user_metadata?.name || user.email}
+                    {user.user_metadata?.name || user.email?.split('@')[0] || 'User'}
                   </span>
                 </div>
                 <motion.button
@@ -329,7 +329,7 @@ const Header = () => {
                   <div className="flex items-center space-x-2 bg-white/5 backdrop-blur-lg rounded-lg px-3 py-2">
                     <User className="h-5 w-5 text-blue-400" />
                     <span className="text-white text-sm font-medium">
-                      {user.user_metadata?.name || user.email}
+                      {user.user_metadata?.name || user.email?.split('@')[0] || 'User'}
                     </span>
                   </div>
                   <button

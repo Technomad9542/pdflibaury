@@ -102,3 +102,136 @@ body {
   background-size: 200% 200%;
   animation: gradient 3s ease infinite;
 }
+
+/* Cheat Sheet Styles */
+.mdLayout {
+  color: #345;
+}
+
+.mdLayout h2 {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 24px;
+  margin-top: 64px;
+  position: relative;
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 200;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .mdLayout h2 {
+    margin-bottom: 8px;
+    margin-top: 32px;
+  }
+}
+
+.mdLayout h3 {
+  opacity: 0.9;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 600;
+  position: absolute;
+  right: 0;
+  top: 0;
+  border-bottom-left-radius: 0.5rem;
+  z-index: 10;
+}
+
+.h2-wrap {
+  border-radius: 0.5rem;
+  margin-bottom: 3rem;
+}
+
+.h3-wrap-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  font-size: 0.925rem;
+  line-height: 1.325rem;
+}
+
+.h3-wrap {
+  background: white;
+  padding-top: 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.h3-wrap:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.h3-wrap > .section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+.h3-wrap > .section > p {
+  background: #f8f9fa;
+  color: #345;
+  width: 100%;
+  padding: 1rem;
+  margin: 0;
+}
+
+.h3-wrap > .section > p:last-child {
+  margin-top: auto;
+}
+
+pre {
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  overflow: hidden;
+  overflow-x: auto;
+  background: #1e1e2e;
+  padding: 1rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
+pre > code {
+  color: #e2e8f0;
+  padding: 0 !important;
+  background: transparent;
+  overflow: visible;
+  font-family: 'Fira Code', 'Consolas', monospace;
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  .mdLayout {
+    color: #cbd5e1;
+  }
+  
+  .h3-wrap {
+    background: #1e293b;
+    color: #cbd5e1;
+  }
+  
+  .h3-wrap > .section > p {
+    background: #0f172a;
+    color: #cbd5e1;
+  }
+  
+  .h3-wrap > h3 {
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  }
+}

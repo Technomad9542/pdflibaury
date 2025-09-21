@@ -1,0 +1,13 @@
+{
+  "id": "principle",
+  "title": "Principle",
+  "intro": "|\nA visual cheat-sheet for the 30 keyboard shortcuts found in Principle. This application is MacOS-only.",
+  "tags": [
+    "mac"
+  ],
+  "categories": [
+    "Keyboard Shortcuts"
+  ],
+  "background": "bg-[#b245c6]",
+  "content": "## Keyboard Shortcuts\n\n### Layers {.row-span-2}\n\n| Shortcut          | Action                   |\n| ----------------- | ------------------------ |\n| `R`               | Add rectangle            |\n| `Opt` `R`         | Add rectangle as a child |\n| `T`               | Add text                 |\n| `Opt` `T`         | Add text as a child      |\n| `A`               | Add artboard             |\n| `Cmd` `G`         | Group                    |\n| `Cmd` `Shift` `G` | Ungroup                  |\n| `Cmd` `]`         | Bring forward            |\n| `Cmd` `Shift` `]` | Bring to front           |\n| `Cmd` `[`         | Send backward            |\n| `Cmd` `Shift` `[` | Send to back             |\n\n{.shortcuts}\n\n### Editing\n\n| Shortcut           | Action       |\n| ------------------ | ------------ |\n| `(arrows)`         | Nudge        |\n| `Shift` `(arrows)` | Large nudge  |\n| `Cmd` `D`          | Duplicate    |\n| `Cmd` `R`          | Rename layer |\n\n{.shortcuts}\n\n### Canvas Navigation\n\n| Shortcut         | Action              |\n| ---------------- | ------------------- |\n| `Space` `(drag)` | Pan                 |\n| `Cmd` `=`        | Zoom in             |\n| `Cmd` `-`        | Zoom out            |\n| `Cmd` `1`        | Zoom all            |\n| `Cmd` `2`        | Zoom selection      |\n| `Cmd` `3`        | Center selection    |\n| `Cmd` `0`        | Zoom to actual size |\n\n{.shortcuts}\n\n### Selection\n\n| Shortcut      | Action                  |\n| ------------- | ----------------------- |\n| `Esc`         | Select parent           |\n| `Enter`       | Select child            |\n| `Tab`         | Select next sibling     |\n| `Shift` `Tab` | Select previous sibling |\n| `Cmd` `A`     | Select all siblings     |\n\n{.shortcuts}\n\n### Preview\n\n| Shortcut         | Action                               |\n| ---------------- | ------------------------------------ |\n| `W`              | Rewind prototype                     |\n| `Ctrl` `V`       | Start recording video                |\n| `Ctrl` `Opt` `V` | Start recording video without cursor |\n\n{.shortcuts}\n\n## Also see\n\n- [Keyboard shortcuts for Principle](https://principleformac.com/docs.html#shortcuts) _(principleformac.com)_\n"
+}

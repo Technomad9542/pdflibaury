@@ -1,0 +1,11 @@
+{
+  "id": "obsidian",
+  "title": "Obsidian",
+  "intro": "|\nA visual cheat-sheet for the 17 keyboard shortcuts found in the Obsidian knowledge base app.",
+  "tags": [],
+  "categories": [
+    "Keyboard Shortcuts"
+  ],
+  "background": "bg-[#463793]",
+  "content": "## Keyboard Shortcuts {.cols-2}\n\n### Default Shortcuts\n\n| Shortcut             | Action                      |\n| -------------------- | --------------------------- |\n| `Ctrl` `S`           | Save a file in the editor   |\n| `Ctrl` `N`           | Create a new note           |\n| `Ctrl` `P`           | Open the command palette    |\n| `Ctrl` `O`           | Open the quick switcher     |\n| `Ctrl` `Shift` `F`   | Search in all files         |\n| `Ctrl` `G`           | Open the graph view         |\n| `Ctrl` `Alt` `Left`  | Navigate backwards          |\n| `Ctrl` `Alt` `Right` | Navigate forwards           |\n| `Ctrl` `F`           | Search the current file     |\n| `Ctrl` `E`           | Toggle edit or preview mode |\n| `Ctrl` `,`           | Open settings               |\n\n{.shortcuts}\n\n### Editing\n\n| Shortcut      | Action                          |\n| ------------- | ------------------------------- |\n| `Ctrl` `B`    | Bold selected text              |\n| `Ctrl` `I`    | Italic selected text            |\n| `Ctrl` `K`    | Insert an external link         |\n| `Ctrl` `]`    | Indent                          |\n| `Ctrl` `[`    | Unindent                        |\n| `Alt` `Enter` | Jump into the selected backlink |\n\n{.shortcuts}\n\n## Also see\n\n- [Keyboard shortcuts for Obsidian](https://help.obsidian.md/How+to/Keyboard+shortcuts) _(help.obsidian.md)_\n"
+}
