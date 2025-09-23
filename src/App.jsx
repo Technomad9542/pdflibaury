@@ -6,6 +6,7 @@ import Library from './pages/Library';
 import Welcome from './pages/Welcome';
 import CheatSheets from './pages/CheatSheets';
 import CheatSheet from './pages/CheatSheet';
+import MarkdownCheatSheet from './pages/MarkdownCheatSheet';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -74,7 +75,7 @@ function App() {
             } />
             <Route path="/cheatsheet/:id" element={
               <ProtectedRoute>
-                <CheatSheet />
+                <MarkdownCheatSheet />
               </ProtectedRoute>
             } />
           </Routes>
