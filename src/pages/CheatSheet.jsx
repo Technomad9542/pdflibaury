@@ -25,6 +25,42 @@ const CheatSheet = () => {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
+  const processMarkdownContent = (content) => {
+    // Handle links [text](url)
+    content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-indigo-600 hover:underline dark:text-slate-300" target="_blank" rel="noopener noreferrer">$1</a>');
+    
+    // Handle bold **text**
+    content = content.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    
+    // Handle italic *text*
+    content = content.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    
+    // Handle line breaks
+    content = content.replace(/\n/g, '<br>');
+    
+    return content;
+  };
+
+  const renderListItems = (listContent) => {
+    const items = listContent.split('\n').filter(item => item.trim() !== '' && (item.startsWith('- ') || item.startsWith('* ')));
+    return (
+      <ul className="my-2 list-disc pl-5 space-y-1">
+        {items.map((item, index) => {
+          const cleanItem = item.substring(2).trim();
+          const processedItem = processMarkdownContent(cleanItem);
+          return (
+            <li key={index} className="pl-2">
+              <span 
+                className="dark:text-slate-400" 
+                dangerouslySetInnerHTML={{ __html: processedItem }} 
+              />
+            </li>
+          );
+        })}
+      </ul>
+    );
+  };
+
   const formatContent = (content) => {
     // Split content into sections by ##
     const sections = content.split('## ').filter(section => section.trim() !== '');
@@ -37,14 +73,26 @@ const CheatSheet = () => {
       // Split body into subsections by ###
       const subSections = body.split('### ').filter(sub => sub.trim() !== '');
       
+      // Determine grid columns based on number of subsections
+      let gridClass = "grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6";
+      if (subSections.length === 1) {
+        gridClass = "grid grid-cols-1 gap-6";
+      } else if (subSections.length === 2) {
+        gridClass = "grid grid-cols-1 md:grid-cols-2 gap-6";
+      } else if (subSections.length === 3) {
+        gridClass = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+      } else if (subSections.length === 4) {
+        gridClass = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6";
+      }
+      
       return (
         <div key={index} className="h2-wrap mb-12">
           <h2 className="text-3xl font-light mb-6 text-indigo-600 dark:text-slate-300">
             {title}
           </h2>
           
-          {/* Responsive grid for subsections - adjusts based on screen size */}
-          <div className="h3-wrap-list grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
+          {/* Responsive grid for subsections - matches reference project styling */}
+          <div className={`h3-wrap-list ${gridClass}`}>
             {subSections.map((subSection, subIndex) => {
               const subLines = subSection.split('\n');
               const subTitle = subLines[0];
@@ -89,7 +137,16 @@ const CheatSheet = () => {
                           </div>
                         );
                       } else if (part.trim() !== '') {
-                        // This is regular text
+                        // Check if this is a list
+                        const listItems = part.split('\n').filter(line => line.trim().startsWith('- ') || line.trim().startsWith('* '));
+                        if (listItems.length > 0) {
+                          return (
+                            <div key={partIndex} className="bg-gray-50 w-full px-4 py-3 m-0 dark:bg-slate-900/30 dark:text-slate-400">
+                              {renderListItems(part)}
+                            </div>
+                          );
+                        }
+                        
                         // Handle table formatting
                         if (part.includes('|') && part.includes('---')) {
                           const rows = part.split('\n').filter(row => row.trim() !== '' && !row.includes('---'));
@@ -101,7 +158,7 @@ const CheatSheet = () => {
                             
                             return (
                               <div key={partIndex} className="overflow-x-auto">
-                                <table className="min-w-full bg-gray-50 dark:bg-slate-900/30">
+                                <table className="min-w-full bg-gray-50 dark:bg-slate-900/30 mdLayout">
                                   <thead>
                                     <tr className="bg-gray-100 dark:bg-slate-700">
                                       {headers.map((header, headerIndex) => (
@@ -118,7 +175,10 @@ const CheatSheet = () => {
                                         <tr key={rowIndex} className={rowIndex % 2 === 0 ? "bg-white dark:bg-slate-800" : "bg-gray-50 dark:bg-slate-900/30"}>
                                           {cells.map((cell, cellIndex) => (
                                             <td key={cellIndex} className="px-4 py-2 text-sm border-b border-gray-200 dark:border-slate-700">
-                                              {cell.trim()}
+                                              <span 
+                                                className="dark:text-slate-400" 
+                                                dangerouslySetInnerHTML={{ __html: processMarkdownContent(cell.trim()) }} 
+                                              />
                                             </td>
                                           ))}
                                         </tr>
@@ -132,10 +192,11 @@ const CheatSheet = () => {
                         }
                         
                         // Handle regular paragraphs
+                        const processedPart = processMarkdownContent(part.trim());
+                        
                         return (
-                          <p key={partIndex} className="bg-gray-50 w-full px-4 py-3 m-0 dark:bg-slate-900/30 dark:text-slate-400">
-                            {part.trim()}
-                          </p>
+                          <p key={partIndex} className="bg-gray-50 w-full px-4 py-3 m-0 dark:bg-slate-900/30 dark:text-slate-400" 
+                             dangerouslySetInnerHTML={{ __html: processedPart }} />
                         );
                       }
                       return null;
@@ -210,7 +271,7 @@ const CheatSheet = () => {
             </h1>
             
             <div className="lg:w-3/5 mx-auto intro leading-relaxed text-slate-600 dark:text-slate-400">
-              {cheatSheet.intro}
+              {cheatSheet.intro.replace('|', '').trim()}
             </div>
             
             <div className="flex flex-wrap justify-center gap-2 mt-6">
