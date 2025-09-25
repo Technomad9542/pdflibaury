@@ -22,15 +22,14 @@ export default function useAuth() {
       setUser(session?.user ?? null);
       setLoading(false);
       
-      // Redirect to welcome page only on initial sign-in from home page
-      if (_event === 'SIGNED_IN' && session?.user && 
-          (location.pathname === '/' || location.pathname === '')) {
-        navigate('/welcome');
+      // Redirect to home page only after initial sign-in, not on tab changes
+      if (_event === 'SIGNED_IN' && session?.user && location.pathname === '/') {
+        navigate('/');
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, location]);
+  }, [navigate, location.pathname]);
 
   const signInWithGoogle = async () => {
     setLoading(true);
@@ -38,7 +37,7 @@ export default function useAuth() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/welcome`
+          redirectTo: `${window.location.origin}/`
         }
       });
       

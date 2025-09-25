@@ -14,6 +14,8 @@ const Library = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [allPdfs, setAllPdfs] = useState([]);
   const [categories, setCategories] = useState(['all']);
+  const [subcategories, setSubcategories] = useState([]); // New state for subcategories
+  const [selectedSubcategory, setSelectedSubcategory] = useState('all'); // New state for selected subcategory
   const [selectedPDF, setSelectedPDF] = useState(null);
   const [isPDFViewerOpen, setIsPDFViewerOpen] = useState(false);
   
@@ -31,10 +33,12 @@ const Library = () => {
       const resources = await PDFDataService.getAllResources({ sortBy });
       setAllPdfs(resources);
 
-      // Fetch categories
+      // Fetch categories and subcategories
       const categoryData = await PDFDataService.getAllCategories();
       const uniqueCategories = ['all', ...new Set(categoryData.map(cat => cat.category))];
+      const uniqueSubcategories = ['all', ...new Set(categoryData.map(cat => cat.subcategory))];
       setCategories(uniqueCategories);
+      setSubcategories(uniqueSubcategories);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -47,13 +51,14 @@ const Library = () => {
     if (!isLoading) {
       fetchFilteredData();
     }
-  }, [searchTerm, selectedCategory, sortBy]);
+  }, [searchTerm, selectedCategory, selectedSubcategory, sortBy]); // Added selectedSubcategory
 
   const fetchFilteredData = async () => {
     try {
       const filters = {
         search: searchTerm,
         category: selectedCategory,
+        subcategory: selectedSubcategory !== 'all' ? selectedSubcategory : undefined, // Add subcategory filter
         sortBy
       };
       const resources = await PDFDataService.getAllResources(filters);
@@ -88,7 +93,7 @@ const Library = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, sortBy]);
+  }, [searchTerm, selectedCategory, selectedSubcategory, sortBy]); // Added selectedSubcategory
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -168,6 +173,19 @@ const Library = () => {
                 {categories.map(category => (
                   <option key={category} value={category} className="bg-dark-300 text-white">
                     {category === 'all' ? 'All Categories' : category}
+                  </option>
+                ))}
+              </select>
+
+              {/* Subcategory Filter */}
+              <select
+                value={selectedSubcategory}
+                onChange={(e) => setSelectedSubcategory(e.target.value)}
+                className="px-4 py-2 bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+              >
+                {subcategories.map(subcategory => (
+                  <option key={subcategory} value={subcategory} className="bg-dark-300 text-white">
+                    {subcategory === 'all' ? 'All Subcategories' : subcategory}
                   </option>
                 ))}
               </select>
