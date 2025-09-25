@@ -48,11 +48,16 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navItems = [
-    { name: 'Home', path: '/', icon: BookOpen },
-    { name: 'Library', path: '/library', icon: BookOpen, protected: true },
-    { name: 'Search', path: '/search', icon: Search, protected: true },
-  ];
+  // Only show Home button when not logged in
+  const navItems = user 
+    ? [
+        { name: 'Home', path: '/', icon: BookOpen },
+        { name: 'Library', path: '/library', icon: BookOpen, protected: true },
+        { name: 'Search', path: '/search', icon: Search, protected: true },
+      ]
+    : [
+        { name: 'Home', path: '/', icon: BookOpen }
+      ];
 
   return (
     <motion.header

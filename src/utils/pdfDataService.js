@@ -69,7 +69,7 @@ export class PDFDataService {
         query = query.eq('category', filters.category);
       }
 
-      if (filters.subcategory) {
+      if (filters.subcategory && filters.subcategory !== 'all') {
         query = query.eq('subcategory', filters.subcategory);
       }
 
@@ -114,6 +114,13 @@ export class PDFDataService {
         if (filters.category && filters.category !== 'all') {
           filteredData = filteredData.filter(item => 
             item.category === filters.category
+          );
+        }
+        
+        // Apply subcategory filter
+        if (filters.subcategory && filters.subcategory !== 'all') {
+          filteredData = filteredData.filter(item => 
+            item.subcategory === filters.subcategory
           );
         }
         
@@ -166,7 +173,18 @@ export class PDFDataService {
     // If Supabase is not configured, return fallback categories
     if (!isSupabaseConfigured()) {
       const categories = [...new Set(fallbackData.map(item => item.category))];
-      return categories.map(category => ({ category, subcategory: 'All' }));
+      const subcategories = [...new Set(fallbackData.map(item => item.subcategory))];
+      // Create unique combinations of category and subcategory
+      const uniqueCombinations = [];
+      fallbackData.forEach(item => {
+        const exists = uniqueCombinations.some(combo => 
+          combo.category === item.category && combo.subcategory === item.subcategory
+        );
+        if (!exists) {
+          uniqueCombinations.push({ category: item.category, subcategory: item.subcategory });
+        }
+      });
+      return uniqueCombinations;
     }
 
     try {
@@ -181,7 +199,18 @@ export class PDFDataService {
       console.error('Error fetching categories:', error);
       // Return fallback categories on error
       const categories = [...new Set(fallbackData.map(item => item.category))];
-      return categories.map(category => ({ category, subcategory: 'All' }));
+      const subcategories = [...new Set(fallbackData.map(item => item.subcategory))];
+      // Create unique combinations of category and subcategory
+      const uniqueCombinations = [];
+      fallbackData.forEach(item => {
+        const exists = uniqueCombinations.some(combo => 
+          combo.category === item.category && combo.subcategory === item.subcategory
+        );
+        if (!exists) {
+          uniqueCombinations.push({ category: item.category, subcategory: item.subcategory });
+        }
+      });
+      return uniqueCombinations;
     }
   }
 
