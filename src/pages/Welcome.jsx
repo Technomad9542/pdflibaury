@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, FileText, User, ArrowRight, Library, FileSpreadsheet } from 'lucide-react';
+import { BookOpen, FileText, User, ArrowRight, Library, FileSpreadsheet, Code } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 
 const Welcome = () => {
@@ -23,6 +23,14 @@ const Welcome = () => {
       action: () => navigate('/cheatsheets'),
       buttonText: 'Explore Sheets',
       color: 'from-green-500 to-teal-600'
+    },
+    {
+      icon: Code,
+      title: 'DSA Practice',
+      description: 'Company-wise DSA questions and learning resources',
+      action: () => navigate('/dsa'),
+      buttonText: 'Start Practicing',
+      color: 'from-orange-500 to-red-600'
     }
   ];
 
@@ -102,7 +110,7 @@ const Welcome = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid md:grid-cols-2 gap-8 mb-16"
+          className="grid md:grid-cols-3 gap-8 mb-16"
         >
           {features.map((feature, index) => {
             const Icon = feature.icon;

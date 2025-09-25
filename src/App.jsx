@@ -7,6 +7,9 @@ import Welcome from './pages/Welcome';
 import CheatSheets from './pages/CheatSheets';
 import CheatSheet from './pages/CheatSheet';
 import MarkdownCheatSheet from './pages/MarkdownCheatSheet';
+import DSA from './pages/DSA';
+import DSACompanyWise from './pages/DSACompanyWise';
+import DSALearningResources from './pages/DSALearningResources';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -76,6 +79,21 @@ function App() {
             <Route path="/cheatsheet/:id" element={
               <ProtectedRoute>
                 <MarkdownCheatSheet />
+              </ProtectedRoute>
+            } />
+            <Route path="/dsa" element={
+              <ProtectedRoute>
+                <DSA />
+              </ProtectedRoute>
+            } />
+            <Route path="/dsa/company" element={
+              <ProtectedRoute>
+                <DSACompanyWise />
+              </ProtectedRoute>
+            } />
+            <Route path="/dsa/resources" element={
+              <ProtectedRoute>
+                <DSALearningResources />
               </ProtectedRoute>
             } />
           </Routes>

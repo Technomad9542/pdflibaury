@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Download, BookOpen, Zap, Search, Users } from 'lucide-react';
+import { ArrowRight, Download, BookOpen, Zap, Search, Users, Code } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 
 const Home = () => {
@@ -31,7 +31,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <Link to="/library" className="block">
               <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-center hover:scale-105 transition-transform duration-300">
                 <BookOpen className="h-12 w-12 text-white mx-auto mb-4" />
@@ -51,6 +51,18 @@ const Home = () => {
                 <p className="text-green-100 mb-4">Access quick reference guides and study materials</p>
                 <div className="inline-flex items-center text-white font-medium">
                   Explore Sheets
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </div>
+              </div>
+            </Link>
+
+            <Link to="/dsa" className="block">
+              <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-8 text-center hover:scale-105 transition-transform duration-300">
+                <Code className="h-12 w-12 text-white mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">DSA Practice</h2>
+                <p className="text-orange-100 mb-4">Company-wise DSA questions and learning resources</p>
+                <div className="inline-flex items-center text-white font-medium">
+                  Start Practicing
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </div>
               </div>
