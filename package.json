@@ -20,7 +20,9 @@
     "react-pdf": "^10.1.0",
     "react-pdf-viewer": "^0.1.0",
     "react-router-dom": "^6.11.0",
-    "remark-gfm": "^4.0.1"
+    "rehype-autolink-headings": "^7.1.0",
+    "remark-gfm": "^4.0.1",
+    "remark-slug": "^7.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

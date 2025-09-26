@@ -2,6 +2,7 @@
 .App {
   position: relative;
   min-height: 100vh;
+  overflow: visible; /* Allow scrolling */
 }
 
 /* Utility classes for line clamping */

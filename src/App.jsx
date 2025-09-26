@@ -9,7 +9,8 @@ import CheatSheet from './pages/CheatSheet';
 import MarkdownCheatSheet from './pages/MarkdownCheatSheet';
 import DSA from './pages/DSA';
 import DSACompanyWise from './pages/DSACompanyWise';
-import DSALearningResources from './pages/DSALearningResources';
+// Import the new DSAResources component instead of the old one
+import DSAResources from './pages/DSAResources';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -91,9 +92,10 @@ function App() {
                 <DSACompanyWise />
               </ProtectedRoute>
             } />
+            {/* Use the new DSAResources component instead of DSALearningResources */}
             <Route path="/dsa/resources" element={
               <ProtectedRoute>
-                <DSALearningResources />
+                <DSAResources />
               </ProtectedRoute>
             } />
           </Routes>
