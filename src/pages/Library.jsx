@@ -4,6 +4,7 @@ import { Search, Filter, Download, Eye, Star, ChevronLeft, ChevronRight, Grid, L
 import PDFDataService from '../utils/pdfDataService.js';
 import PDFViewer from '../components/PDFViewer.jsx';
 import { isSupabaseConfigured } from '../utils/supabase.js';
+import { usePDFViewer } from '../contexts/PDFViewerContext';
 
 const Library = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,7 +18,7 @@ const Library = () => {
   const [subcategories, setSubcategories] = useState([]); // New state for subcategories
   const [selectedSubcategory, setSelectedSubcategory] = useState('all'); // New state for selected subcategory
   const [selectedPDF, setSelectedPDF] = useState(null);
-  const [isPDFViewerOpen, setIsPDFViewerOpen] = useState(false);
+  const { isPDFViewerOpen, setIsPDFViewerOpen } = usePDFViewer();
   
   const itemsPerPage = 12;
 

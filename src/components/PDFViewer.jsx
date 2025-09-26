@@ -39,15 +39,51 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
     if (isOpen) {
       resetControlsTimeout();
       const handleMouseMove = () => resetControlsTimeout();
+      const handleTouchStart = () => resetControlsTimeout();
+      
       document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('touchstart', handleTouchStart);
+      
       return () => {
         document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('touchstart', handleTouchStart);
         if (controlsTimeoutRef.current) {
           clearTimeout(controlsTimeoutRef.current);
         }
       };
     }
   }, [isOpen, isFullscreen]);
+
+  // Handle fullscreen change events
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      );
+      
+      setIsFullscreen(isCurrentlyFullscreen);
+      
+      // Show controls when exiting fullscreen
+      if (!isCurrentlyFullscreen) {
+        setShowControls(true);
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
+  }, []);
 
   // Fetch related resources when PDF changes
   useEffect(() => {
@@ -120,13 +156,24 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
     if (!isFullscreen) {
       if (viewerRef.current?.requestFullscreen) {
         viewerRef.current.requestFullscreen();
+      } else if (viewerRef.current?.webkitRequestFullscreen) {
+        viewerRef.current.webkitRequestFullscreen();
+      } else if (viewerRef.current?.mozRequestFullScreen) {
+        viewerRef.current.mozRequestFullScreen();
+      } else if (viewerRef.current?.msRequestFullscreen) {
+        viewerRef.current.msRequestFullscreen();
       }
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
       }
     }
-    setIsFullscreen(!isFullscreen);
   };
 
   const handleZoomIn = () => {
@@ -142,6 +189,11 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
   };
 
   const handleClose = () => {
+    // Exit fullscreen if in fullscreen mode
+    if (isFullscreen) {
+      toggleFullscreen();
+    }
+    
     setIsFullscreen(false);
     setZoom(100);
     setRotation(0);
@@ -177,50 +229,51 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -100, opacity: 0 }}
-              className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent p-4"
+              className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent p-3 sm:p-4"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center space-x-2 min-w-0">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={handleClose}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex-shrink-0"
                   >
-                    <X className="h-6 w-6 text-white" />
+                    <X className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </motion.button>
                   
-                  <div className="text-white">
-                    <h2 className="text-lg font-bold truncate max-w-md">
+                  <div className="text-white min-w-0">
+                    <h2 className="text-sm sm:text-base font-bold truncate">
                       {pdfResource.name}
                     </h2>
-                    <p className="text-sm text-gray-300">
+                    <p className="text-xs text-gray-300 truncate hidden sm:block">
                       {pdfResource.pdf_categories?.category} • {pdfResource.pdf_categories?.subcategory}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  {/* Zoom Controls */}
-                  <div className="flex items-center space-x-1 bg-white/10 rounded-lg p-1">
+                {/* Action Buttons and Zoom Controls - All in one row for mobile */}
+                <div className="flex items-center space-x-1 flex-shrink-0">
+                  {/* Zoom Controls for mobile and desktop */}
+                  <div className="flex items-center bg-white/10 rounded-lg p-1 mr-1">
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={handleZoomOut}
-                      className="p-2 rounded text-white hover:bg-white/20 transition-colors"
+                      className="p-1 sm:p-2 rounded text-white hover:bg-white/20 transition-colors"
                     >
-                      <ZoomOut className="h-4 w-4" />
+                      <ZoomOut className="h-3 w-3 sm:h-4 sm:w-4" />
                     </motion.button>
-                    <span className="text-white text-sm min-w-[3rem] text-center">
+                    <span className="text-white text-xs sm:text-sm min-w-[2rem] sm:min-w-[3rem] text-center">
                       {zoom}%
                     </span>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={handleZoomIn}
-                      className="p-2 rounded text-white hover:bg-white/20 transition-colors"
+                      className="p-1 sm:p-2 rounded text-white hover:bg-white/20 transition-colors"
                     >
-                      <ZoomIn className="h-4 w-4" />
+                      <ZoomIn className="h-3 w-3 sm:h-4 sm:w-4" />
                     </motion.button>
                   </div>
 
@@ -229,48 +282,48 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={handleRotate}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                   >
-                    <RotateCw className="h-5 w-5 text-white" />
+                    <RotateCw className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
                   </motion.button>
 
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setIsFavorite(!isFavorite)}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                   >
-                    <Heart className={`h-5 w-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-white'}`} />
+                    <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isFavorite ? 'text-red-500 fill-current' : 'text-white'}`} />
                   </motion.button>
 
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={handleShare}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors hidden sm:block"
                   >
-                    <Share2 className="h-5 w-5 text-white" />
+                    <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
                   </motion.button>
 
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={handleDownload}
-                    className="p-2 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors"
+                    className="p-1.5 sm:p-2 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors"
                   >
-                    <Download className="h-5 w-5 text-white" />
+                    <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
                   </motion.button>
 
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={toggleFullscreen}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                    className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
                   >
                     {isFullscreen ? (
-                      <Minimize className="h-5 w-5 text-white" />
+                      <Minimize className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
                     ) : (
-                      <Maximize className="h-5 w-5 text-white" />
+                      <Maximize className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
                     )}
                   </motion.button>
                 </div>
@@ -280,7 +333,7 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
         </AnimatePresence>
 
         {/* Main Content Area */}
-        <div className="flex h-full pt-20">
+        <div className="flex h-full pt-16 sm:pt-20">
           {/* PDF Viewer */}
           <div className="flex-1 relative">
             {isLoading && (
@@ -294,11 +347,11 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
 
             {error && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <div className="text-center text-white bg-red-500/20 border border-red-500 rounded-lg p-8 max-w-md">
+                <div className="text-center text-white bg-red-500/20 border border-red-500 rounded-lg p-6 max-w-xs sm:max-w-md">
                   <FileText className="h-12 w-12 mx-auto mb-4 text-red-400" />
                   <h3 className="text-lg font-semibold mb-2">Unable to Load PDF</h3>
                   <p className="text-sm text-gray-300 mb-4">{error}</p>
-                  <div className="flex gap-2 justify-center">
+                  <div className="flex flex-col gap-2 justify-center">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -306,15 +359,6 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors"
                     >
                       Download Instead
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => window.open(pdfResource.file_link, '_blank')}
-                      className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white font-medium transition-colors flex items-center gap-2"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      Open in Drive
                     </motion.button>
                   </div>
                 </div>
@@ -336,12 +380,12 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
             />
           </div>
 
-          {/* Sidebar - Related Resources */}
+          {/* Sidebar - Related Resources - Hidden on mobile when not fullscreen */}
           {!isFullscreen && relatedResources.length > 0 && (
             <motion.div
               initial={{ x: 300, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              className="w-80 bg-white/5 backdrop-blur-lg border-l border-white/10 p-4 overflow-y-auto"
+              className="hidden md:block w-80 bg-white/5 backdrop-blur-lg border-l border-white/10 p-4 overflow-y-auto"
             >
               <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
@@ -383,7 +427,7 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
           )}
         </div>
 
-        {/* Bottom Controls */}
+        {/* Bottom Controls - Removed the div with download info as requested */}
         <AnimatePresence>
           {(showControls || !isFullscreen) && (
             <motion.div
@@ -392,21 +436,7 @@ const PDFViewer = ({ isOpen, onClose, pdfResource, onResourceChange }) => {
               exit={{ y: 100, opacity: 0 }}
               className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black/80 to-transparent p-4"
             >
-              <div className="flex items-center justify-center space-x-4">
-                <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2">
-                  <span className="text-white text-sm">
-                    {pdfResource.pages ? `${pdfResource.pages} pages` : 'PDF Document'}
-                  </span>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-white text-sm">
-                    {pdfResource.size || 'Unknown size'}
-                  </span>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-white text-sm">
-                    {pdfResource.downloads?.toLocaleString() || 0} downloads
-                  </span>
-                </div>
-              </div>
+              {/* Empty div - removed the download info div as requested */}
             </motion.div>
           )}
         </AnimatePresence>

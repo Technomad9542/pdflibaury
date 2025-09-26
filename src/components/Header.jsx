@@ -5,6 +5,7 @@ import { BookOpen, Search, Menu, X, Settings, User } from 'lucide-react';
 import AdminPanel from './AdminPanel';
 import useAuth from '../hooks/useAuth';
 import AdminDataService from '../utils/adminDataService';
+import { usePDFViewer } from '../contexts/PDFViewerContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +16,7 @@ const Header = () => {
   const location = useLocation();
   const { user, loading, signInWithGoogle, signOut } = useAuth();
   const navigate = useNavigate();
+  const { isPDFViewerOpen } = usePDFViewer();
 
   // Check if we should hide navbar on current page
   const shouldHideNavbar = location.pathname === '/dsa/resources';
@@ -62,8 +64,8 @@ const Header = () => {
         { name: 'Home', path: '/', icon: BookOpen }
       ];
 
-  // Don't render navbar on DSA resources page
-  if (shouldHideNavbar) {
+  // Don't render navbar on DSA resources page or when PDF viewer is open
+  if (shouldHideNavbar || isPDFViewerOpen) {
     return null;
   }
 
