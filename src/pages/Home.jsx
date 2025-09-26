@@ -20,7 +20,7 @@ const Home = () => {
   // If user is logged in, show welcome content
   if (user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-dark-400 via-dark-300 to-dark-200 relative overflow-hidden pt-20">
+      <div className="min-h-screen relative overflow-hidden pt-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
@@ -114,49 +114,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-400 via-dark-300 to-dark-200 relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0">
-          {[...Array(100)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute bg-blue-500/10 rounded-full"
-              style={{
-                width: Math.random() * 4 + 'px',
-                height: Math.random() * 4 + 'px',
-                left: Math.random() * 100 + '%',
-                top: Math.random() * 100 + '%',
-              }}
-              animate={{
-                y: [0, -30, 0],
-                opacity: [0, 1, 0],
-              }}
-              transition={{
-                duration: Math.random() * 3 + 2,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Interactive cursor effect */}
-        <motion.div
-          className="absolute w-96 h-96 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-3xl pointer-events-none"
-          style={{
-            left: mousePosition.x - 192,
-            top: mousePosition.y - 192,
-          }}
-          animate={{
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-          }}
-        />
-      </div>
+    <div className="min-h-screen relative overflow-hidden">
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8">

@@ -18,13 +18,13 @@ function App() {
   return (
     <Router>
       <div className="App relative">
-        {/* Animated Background */}
+        {/* Animated Background - Always visible */}
         <div className="fixed inset-0 bg-gradient-to-br from-dark-500 via-dark-400 to-dark-300 -z-10">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent" />
         </div>
 
-        {/* Floating Particles */}
+        {/* Floating Particles - Always visible */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
           {[...Array(30)].map((_, i) => (
             <motion.div
@@ -54,7 +54,7 @@ function App() {
 
         <Header />
         
-        <main>
+        <main className="relative z-0">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/welcome" element={
