@@ -13,6 +13,7 @@ import DSACompanyWise from './pages/DSACompanyWise';
 import DSAResources from './pages/DSAResources';
 import ProtectedRoute from './components/ProtectedRoute';
 import { PDFViewerProvider } from './contexts/PDFViewerContext';
+import MouseSpotlight from './components/MouseSpotlight'; // Import the MouseSpotlight component
 import './App.css';
 
 function App() {
@@ -26,8 +27,11 @@ function App() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent" />
           </div>
 
+          {/* Mouse Spotlight Effect - Positioned behind content but above background */}
+          <MouseSpotlight />
+          
           {/* Floating Particles - Always visible */}
-          <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+          <div className="fixed inset-0 pointer-events-none overflow-hidden -z-5">
             {[...Array(30)].map((_, i) => (
               <motion.div
                 key={i}

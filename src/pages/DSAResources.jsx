@@ -15,7 +15,9 @@ const DSAResources = () => {
   const [expandedSections, setExpandedSections] = useState({});
   const [activeHeading, setActiveHeading] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [visibleHeadings, setVisibleHeadings] = useState([]); // For lazy loading TOC items
+  // Removed visibleHeadings state as we're not using lazy loading for TOC
+  const [markdownChunks, setMarkdownChunks] = useState([]);
+  const [loadedChunks, setLoadedChunks] = useState(0);
 
   useEffect(() => {
     // Fetch the markdown file from the correct path in public folder
@@ -68,18 +70,6 @@ const DSAResources = () => {
       }
     });
     setExpandedSections(initialExpanded);
-    
-    // Set initial visible headings for lazy loading
-    setVisibleHeadings(headings.slice(0, 20)); // Load first 20 headings initially
-  };
-
-  // Lazy load more headings as user scrolls through TOC
-  const loadMoreHeadings = () => {
-    if (visibleHeadings.length < headings.length) {
-      const nextIndex = visibleHeadings.length;
-      const nextHeadings = headings.slice(nextIndex, nextIndex + 10);
-      setVisibleHeadings(prev => [...prev, ...nextHeadings]);
-    }
   };
 
   // Group headings by their parent sections for collapsible sidebar
@@ -87,7 +77,7 @@ const DSAResources = () => {
     const groups = [];
     let currentGroup = null;
 
-    visibleHeadings.forEach(heading => {
+    headings.forEach(heading => {  // Use all headings instead of visibleHeadings
       if (heading.level === 1) {
         // New top-level section
         currentGroup = {
@@ -102,7 +92,7 @@ const DSAResources = () => {
     });
 
     return groups;
-  }, [visibleHeadings]);
+  }, [headings]); // Depend on all headings instead of visibleHeadings
 
   const toggleSection = (id) => {
     setExpandedSections(prev => ({
@@ -153,9 +143,6 @@ const DSAResources = () => {
   }, [activeHeading]);
 
   // Lazy load markdown content in chunks
-  const [markdownChunks, setMarkdownChunks] = useState([]);
-  const [loadedChunks, setLoadedChunks] = useState(0);
-
   useEffect(() => {
     if (markdown) {
       // Split markdown into chunks for lazy loading
@@ -187,7 +174,7 @@ const DSAResources = () => {
         // Load more content when user scrolls 70% of the way down
         if (scrollPercentage > 70) {
           loadMoreChunks();
-          loadMoreHeadings();
+          // Removed loadMoreHeadings() call as we're not lazy loading TOC
         }
       }
     };
