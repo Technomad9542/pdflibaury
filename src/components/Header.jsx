@@ -16,6 +16,9 @@ const Header = () => {
   const { user, loading, signInWithGoogle, signOut } = useAuth();
   const navigate = useNavigate();
 
+  // Check if we should hide navbar on current page
+  const shouldHideNavbar = location.pathname === '/dsa/resources';
+
   // Check if user is admin when user state changes
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -58,6 +61,11 @@ const Header = () => {
     : [
         { name: 'Home', path: '/', icon: BookOpen }
       ];
+
+  // Don't render navbar on DSA resources page
+  if (shouldHideNavbar) {
+    return null;
+  }
 
   return (
     <motion.header
