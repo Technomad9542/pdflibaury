@@ -116,7 +116,7 @@ const Library = () => {
               PDF Library
             </span>
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto px-4">
             Explore our vast collection of educational resources and find the perfect PDF for your learning journey.
           </p>
         </motion.div>
@@ -162,14 +162,14 @@ const Library = () => {
             />
           </div>
 
-          {/* Filter Controls */}
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex flex-wrap gap-4 items-center">
-              {/* Category Filter */}
+          {/* Filter Controls - Optimized layout */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center mb-4">
+            {/* Category Filter */}
+            <div className="md:col-span-1">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                className="w-full px-4 py-3 bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
               >
                 {categories.map(category => (
                   <option key={category} value={category} className="bg-dark-300 text-white">
@@ -177,12 +177,14 @@ const Library = () => {
                   </option>
                 ))}
               </select>
+            </div>
 
-              {/* Subcategory Filter */}
+            {/* Subcategory Filter */}
+            <div className="md:col-span-1">
               <select
                 value={selectedSubcategory}
                 onChange={(e) => setSelectedSubcategory(e.target.value)}
-                className="px-4 py-2 bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                className="w-full px-4 py-3 bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
               >
                 {subcategories.map(subcategory => (
                   <option key={subcategory} value={subcategory} className="bg-dark-300 text-white">
@@ -190,45 +192,47 @@ const Library = () => {
                   </option>
                 ))}
               </select>
+            </div>
 
-              {/* Sort Filter */}
+            {/* Sort & View Mode - Combined in one control group */}
+            <div className="md:col-span-1 flex gap-3">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+                className="flex-1 px-4 py-3 bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
               >
                 <option value="newest" className="bg-dark-300 text-white">Newest First</option>
                 <option value="title" className="bg-dark-300 text-white">Alphabetical</option>
               </select>
-            </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-md transition-all duration-300 ${
-                  viewMode === 'grid'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <Grid className="h-5 w-5" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-md transition-all duration-300 ${
-                  viewMode === 'list'
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <List className="h-5 w-5" />
-              </button>
+              
+              {/* View Mode Toggle */}
+              <div className="flex items-center bg-white/5 backdrop-blur-lg border border-white/10 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-md transition-all duration-300 ${
+                    viewMode === 'grid'
+                      ? 'bg-blue-500 text-white'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <Grid className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-md transition-all duration-300 ${
+                    viewMode === 'list'
+                      ? 'bg-blue-500 text-white'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  <List className="h-5 w-5" />
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Results Count */}
-          <div className="mt-4 text-gray-400">
+          <div className="text-gray-400">
             Showing {currentPdfs.length} of {sortedPdfs.length} results
           </div>
         </motion.div>
@@ -239,7 +243,7 @@ const Library = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className={viewMode === 'grid' 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
+            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12"
             : "space-y-4 mb-12"
           }
         >
@@ -272,18 +276,18 @@ const Library = () => {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
                     <div className="absolute bottom-4 left-4 right-4 z-20">
-                      <div className="text-white text-sm font-medium">
+                      <div className="text-white text-sm font-medium truncate">
                         {pdf.category}
                       </div>
                     </div>
                   </div>
                   
                   {/* Content */}
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
+                  <div className="p-5">
+                    <h3 className="text-base md:text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
                       {pdf.name}
                     </h3>
-                    <p className="text-gray-400 text-sm mb-3">{pdf.category} • {pdf.subcategory}</p>
+                    <p className="text-gray-400 text-xs md:text-sm mb-3 truncate">{pdf.category} • {pdf.subcategory}</p>
                     
                     {/* Creation Date */}
                     <div className="text-xs text-gray-400 mb-4">
@@ -296,10 +300,10 @@ const Library = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleViewPDF(pdf)}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors text-sm"
                       >
                         <Eye className="h-4 w-4" />
-                        View
+                        <span className="hidden xs:inline">View</span>
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
@@ -308,7 +312,8 @@ const Library = () => {
                           const downloadLink = `https://drive.google.com/uc?export=download&id=${pdf.file_link.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]}`;
                           window.open(downloadLink, '_blank');
                         }}
-                        className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
+                        className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
+                        title="Download"
                       >
                         <Download className="h-4 w-4" />
                       </motion.button>
@@ -317,8 +322,8 @@ const Library = () => {
                 </>
               ) : (
                 /* List View */
-                <div className="flex gap-6 p-6">
-                  <div className="w-24 h-32 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-lg flex-shrink-0 overflow-hidden">
+                <div className="flex gap-4 p-5">
+                  <div className="w-16 h-24 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-lg flex-shrink-0 overflow-hidden">
                     {pdf.thumbnail ? (
                       <img 
                         src={pdf.thumbnail} 
@@ -330,24 +335,24 @@ const Library = () => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-white/50">
-                        <BookOpen className="h-8 w-8" />
+                        <BookOpen className="h-6 w-6" />
                       </div>
                     )}
                   </div>
                   
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 gap-2">
+                      <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors truncate">
                         {pdf.name}
                       </h3>
-                      <div className="text-gray-400 text-sm">
+                      <div className="text-gray-400 text-sm whitespace-nowrap">
                         {pdf.category}
                       </div>
                     </div>
                     
-                    <p className="text-gray-400 mb-2">{pdf.category} • {pdf.subcategory}</p>
+                    <p className="text-gray-400 text-sm mb-2 truncate">{pdf.category} • {pdf.subcategory}</p>
                     
-                    <div className="text-sm text-gray-400 mb-3">
+                    <div className="text-xs text-gray-400 mb-3">
                       <span>Added: {new Date(pdf.created_at).toLocaleDateString()}</span>
                     </div>
                     
@@ -361,10 +366,10 @@ const Library = () => {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => handleViewPDF(pdf)}
-                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors"
+                          className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors text-sm"
                         >
                           <Eye className="h-4 w-4" />
-                          View
+                          <span className="hidden xs:inline">View</span>
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.05 }}
@@ -373,7 +378,8 @@ const Library = () => {
                             const downloadLink = `https://drive.google.com/uc?export=download&id=${pdf.file_link.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]}`;
                             window.open(downloadLink, '_blank');
                           }}
-                          className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
+                          className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
+                          title="Download"
                         >
                           <Download className="h-4 w-4" />
                         </motion.button>
@@ -392,7 +398,7 @@ const Library = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex justify-center items-center gap-2"
+            className="flex justify-center items-center gap-2 flex-wrap"
           >
             <button
               onClick={() => handlePageChange(currentPage - 1)}
