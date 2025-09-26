@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkSlug from 'remark-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import TOCSection from '../components/TOCSection';
 import './DSAResources.css';
 
 const DSAResources = () => {
@@ -14,6 +15,7 @@ const DSAResources = () => {
   const [expandedSections, setExpandedSections] = useState({});
   const [activeHeading, setActiveHeading] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [visibleHeadings, setVisibleHeadings] = useState([]); // For lazy loading TOC items
 
   useEffect(() => {
     // Fetch the markdown file from the correct path in public folder
@@ -66,6 +68,18 @@ const DSAResources = () => {
       }
     });
     setExpandedSections(initialExpanded);
+    
+    // Set initial visible headings for lazy loading
+    setVisibleHeadings(headings.slice(0, 20)); // Load first 20 headings initially
+  };
+
+  // Lazy load more headings as user scrolls through TOC
+  const loadMoreHeadings = () => {
+    if (visibleHeadings.length < headings.length) {
+      const nextIndex = visibleHeadings.length;
+      const nextHeadings = headings.slice(nextIndex, nextIndex + 10);
+      setVisibleHeadings(prev => [...prev, ...nextHeadings]);
+    }
   };
 
   // Group headings by their parent sections for collapsible sidebar
@@ -73,7 +87,7 @@ const DSAResources = () => {
     const groups = [];
     let currentGroup = null;
 
-    headings.forEach(heading => {
+    visibleHeadings.forEach(heading => {
       if (heading.level === 1) {
         // New top-level section
         currentGroup = {
@@ -88,7 +102,7 @@ const DSAResources = () => {
     });
 
     return groups;
-  }, [headings]);
+  }, [visibleHeadings]);
 
   const toggleSection = (id) => {
     setExpandedSections(prev => ({
@@ -138,101 +152,106 @@ const DSAResources = () => {
     }
   }, [activeHeading]);
 
+  // Lazy load markdown content in chunks
+  const [markdownChunks, setMarkdownChunks] = useState([]);
+  const [loadedChunks, setLoadedChunks] = useState(0);
+
+  useEffect(() => {
+    if (markdown) {
+      // Split markdown into chunks for lazy loading
+      const chunkSize = 5000; // characters per chunk
+      const chunks = [];
+      for (let i = 0; i < markdown.length; i += chunkSize) {
+        chunks.push(markdown.slice(i, i + chunkSize));
+      }
+      setMarkdownChunks(chunks);
+      setLoadedChunks(Math.min(3, chunks.length)); // Load first 3 chunks initially
+    }
+  }, [markdown]);
+
+  // Load more chunks as user scrolls
+  const loadMoreChunks = () => {
+    if (loadedChunks < markdownChunks.length) {
+      setLoadedChunks(prev => Math.min(prev + 2, markdownChunks.length));
+    }
+  };
+
+  // Handle scroll for lazy loading more content
+  useEffect(() => {
+    const handleMarkdownScroll = () => {
+      const markdownContainer = document.querySelector('.dsa-resources-markdown');
+      if (markdownContainer) {
+        const { scrollTop, scrollHeight, clientHeight } = markdownContainer;
+        const scrollPercentage = (scrollTop / (scrollHeight - clientHeight)) * 100;
+        
+        // Load more content when user scrolls 70% of the way down
+        if (scrollPercentage > 70) {
+          loadMoreChunks();
+          loadMoreHeadings();
+        }
+      }
+    };
+
+    const markdownContainer = document.querySelector('.dsa-resources-markdown');
+    if (markdownContainer) {
+      markdownContainer.addEventListener('scroll', handleMarkdownScroll);
+      return () => markdownContainer.removeEventListener('scroll', handleMarkdownScroll);
+    }
+  }, [loadedChunks, markdownChunks.length]);
+
   return (
     <div className="dsa-resources-page">
       <div className="dsa-resources-container">
         {/* Header - Simplified */}
         <div className="dsa-resources-header">
-          <div className="dsa-resources-title-container">
-            <div className="dsa-resources-header-controls">
-              {/* Mobile menu button */}
-              <button
-                className="dsa-resources-mobile-menu-button"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-              
-              {/* Back button */}
-              <button
-                onClick={() => navigate('/dsa')}
-                className="dsa-resources-back-button"
-              >
-                <ArrowLeft className="h-5 w-5 mr-2" />
-                Back to DSA
-              </button>
-            </div>
+          <div className="dsa-resources-header-controls">
+            {/* Mobile menu button */}
+            <button
+              className="dsa-resources-mobile-menu-button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+            
+            {/* Back button */}
+            <button
+              onClick={() => navigate('/dsa')}
+              className="dsa-resources-back-button"
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              Back to DSA
+            </button>
           </div>
         </div>
 
         <div className="dsa-resources-content-wrapper">
           <div className="dsa-resources-content">
-            {/* Mobile Table of Contents Menu */}
-            {isMobileMenuOpen && (
-              <div className="dsa-resources-mobile-toc-overlay">
-                <div className="dsa-resources-mobile-toc-menu">
-                  <div className="dsa-resources-mobile-toc-header">
-                    <h2 className="dsa-resources-sidebar-title">Table of Contents</h2>
-                    <button
-                      className="dsa-resources-mobile-toc-close"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <X size={24} />
-                    </button>
-                  </div>
-                  <div className="dsa-resources-toc-container">
-                    <ul className="dsa-resources-toc">
-                      {groupedHeadings.map((section) => (
-                        <li key={section.id} className="dsa-resources-toc-section">
-                          <div className="dsa-resources-toc-section-header">
-                            <button
-                              onClick={() => handleHeadingClick(section.id)}
-                              className={`dsa-resources-toc-link level-1 ${activeHeading === section.id ? 'active' : ''}`}
-                            >
-                              {section.title}
-                            </button>
-                            {section.children.length > 0 && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleSection(section.id);
-                                }}
-                                className="dsa-resources-collapse-toggle"
-                              >
-                                {expandedSections[section.id] ? (
-                                  <ChevronDown className="h-4 w-4" />
-                                ) : (
-                                  <ChevronRight className="h-4 w-4" />
-                                )}
-                              </button>
-                            )}
-                          </div>
-                          
-                          {section.children.length > 0 && expandedSections[section.id] && (
-                            <ul className="dsa-resources-toc-subitems">
-                              {section.children.map((heading) => (
-                                <li 
-                                  key={heading.id} 
-                                  className={`dsa-resources-toc-item level-${heading.level}`}
-                                  style={{ paddingLeft: `${(heading.level - 2) * 15}px` }}
-                                >
-                                  <button
-                                    onClick={() => handleHeadingClick(heading.id)}
-                                    className={`dsa-resources-toc-link level-${heading.level} ${activeHeading === heading.id ? 'active' : ''}`}
-                                  >
-                                    {heading.title}
-                                  </button>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
+            {/* Mobile/Tablet TOC Drawer */}
+            <div className={`dsa-resources-mobile-toc-drawer ${isMobileMenuOpen ? 'open' : ''}`}>
+              <div className="dsa-resources-mobile-toc-header">
+                <h2 className="dsa-resources-sidebar-title">Table of Contents</h2>
+                <button
+                  className="dsa-resources-mobile-toc-close"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <X size={24} />
+                </button>
               </div>
-            )}
+              <div className="dsa-resources-toc-container">
+                <ul className="dsa-resources-toc">
+                  {groupedHeadings.map((section) => (
+                    <TOCSection
+                      key={section.id}
+                      section={section}
+                      activeHeading={activeHeading}
+                      expandedSections={expandedSections}
+                      handleHeadingClick={handleHeadingClick}
+                      toggleSection={toggleSection}
+                    />
+                  ))}
+                </ul>
+              </div>
+            </div>
 
             {/* Desktop Sidebar Table of Contents */}
             <div className="dsa-resources-sidebar">
@@ -242,50 +261,14 @@ const DSAResources = () => {
               <div className="dsa-resources-toc-container">
                 <ul className="dsa-resources-toc">
                   {groupedHeadings.map((section) => (
-                    <li key={section.id} className="dsa-resources-toc-section">
-                      <div className="dsa-resources-toc-section-header">
-                        <button
-                          onClick={() => handleHeadingClick(section.id)}
-                          className={`dsa-resources-toc-link level-1 ${activeHeading === section.id ? 'active' : ''}`}
-                        >
-                          {section.title}
-                        </button>
-                        {section.children.length > 0 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleSection(section.id);
-                            }}
-                            className="dsa-resources-collapse-toggle"
-                          >
-                            {expandedSections[section.id] ? (
-                              <ChevronDown className="h-4 w-4" />
-                            ) : (
-                              <ChevronRight className="h-4 w-4" />
-                            )}
-                          </button>
-                        )}
-                      </div>
-                      
-                      {section.children.length > 0 && expandedSections[section.id] && (
-                        <ul className="dsa-resources-toc-subitems">
-                          {section.children.map((heading) => (
-                            <li 
-                              key={heading.id} 
-                              className={`dsa-resources-toc-item level-${heading.level}`}
-                              style={{ paddingLeft: `${(heading.level - 2) * 15}px` }}
-                            >
-                              <button
-                                onClick={() => handleHeadingClick(heading.id)}
-                                className={`dsa-resources-toc-link level-${heading.level} ${activeHeading === heading.id ? 'active' : ''}`}
-                              >
-                                {heading.title}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
+                    <TOCSection
+                      key={section.id}
+                      section={section}
+                      activeHeading={activeHeading}
+                      expandedSections={expandedSections}
+                      handleHeadingClick={handleHeadingClick}
+                      toggleSection={toggleSection}
+                    />
                   ))}
                 </ul>
               </div>
@@ -294,31 +277,41 @@ const DSAResources = () => {
             {/* Main Content */}
             <div className="dsa-resources-main">
               <div className="dsa-resources-markdown">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm, remarkSlug]}
-                  rehypePlugins={[rehypeAutolinkHeadings]}
-                  components={{
-                    h1: ({ node, ...props }) => <h1 className="dsa-resources-heading-1" {...props} />,
-                    h2: ({ node, ...props }) => <h2 className="dsa-resources-heading-2" {...props} />,
-                    h3: ({ node, ...props }) => <h3 className="dsa-resources-heading-3" {...props} />,
-                    h4: ({ node, ...props }) => <h4 className="dsa-resources-heading-4" {...props} />,
-                    h5: ({ node, ...props }) => <h5 className="dsa-resources-heading-5" {...props} />,
-                    h6: ({ node, ...props }) => <h6 className="dsa-resources-heading-6" {...props} />,
-                    p: ({ node, ...props }) => <p className="dsa-resources-paragraph" {...props} />,
-                    a: ({ node, ...props }) => <a className="dsa-resources-link" {...props} />,
-                    ul: ({ node, ...props }) => <ul className="dsa-resources-list" {...props} />,
-                    ol: ({ node, ...props }) => <ol className="dsa-resources-list ordered" {...props} />,
-                    li: ({ node, ...props }) => <li className="dsa-resources-list-item" {...props} />,
-                    blockquote: ({ node, ...props }) => <blockquote className="dsa-resources-blockquote" {...props} />,
-                    code: ({ node, ...props }) => <code className="dsa-resources-code" {...props} />,
-                    pre: ({ node, ...props }) => <pre className="dsa-resources-pre" {...props} />,
-                    table: ({ node, ...props }) => <table className="dsa-resources-table" {...props} />,
-                    th: ({ node, ...props }) => <th className="dsa-resources-table-header" {...props} />,
-                    td: ({ node, ...props }) => <td className="dsa-resources-table-cell" {...props} />,
-                  }}
-                >
-                  {markdown}
-                </ReactMarkdown>
+                {markdownChunks.slice(0, loadedChunks).map((chunk, index) => (
+                  <ReactMarkdown
+                    key={index}
+                    remarkPlugins={[remarkGfm, remarkSlug]}
+                    rehypePlugins={[rehypeAutolinkHeadings]}
+                    components={{
+                      h1: ({ node, ...props }) => <h1 className="dsa-resources-heading-1" {...props} />,
+                      h2: ({ node, ...props }) => <h2 className="dsa-resources-heading-2" {...props} />,
+                      h3: ({ node, ...props }) => <h3 className="dsa-resources-heading-3" {...props} />,
+                      h4: ({ node, ...props }) => <h4 className="dsa-resources-heading-4" {...props} />,
+                      h5: ({ node, ...props }) => <h5 className="dsa-resources-heading-5" {...props} />,
+                      h6: ({ node, ...props }) => <h6 className="dsa-resources-heading-6" {...props} />,
+                      p: ({ node, ...props }) => <p className="dsa-resources-paragraph" {...props} />,
+                      a: ({ node, ...props }) => <a className="dsa-resources-link" {...props} />,
+                      ul: ({ node, ...props }) => <ul className="dsa-resources-list" {...props} />,
+                      ol: ({ node, ...props }) => <ol className="dsa-resources-list ordered" {...props} />,
+                      li: ({ node, ...props }) => <li className="dsa-resources-list-item" {...props} />,
+                      blockquote: ({ node, ...props }) => <blockquote className="dsa-resources-blockquote" {...props} />,
+                      code: ({ node, ...props }) => <code className="dsa-resources-code" {...props} />,
+                      pre: ({ node, ...props }) => <pre className="dsa-resources-pre" {...props} />,
+                      table: ({ node, ...props }) => <table className="dsa-resources-table" {...props} />,
+                      th: ({ node, ...props }) => <th className="dsa-resources-table-header" {...props} />,
+                      td: ({ node, ...props }) => <td className="dsa-resources-table-cell" {...props} />,
+                    }}
+                  >
+                    {chunk}
+                  </ReactMarkdown>
+                ))}
+                
+                {/* Loading indicator for more content */}
+                {loadedChunks < markdownChunks.length && (
+                  <div className="loading-more-content">
+                    <p>Loading more content...</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
