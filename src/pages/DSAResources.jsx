@@ -102,8 +102,18 @@ const DSAResources = ({ navigateTo }) => {
   const handleHeadingClick = (id) => {
     setActiveHeading(id);
     const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    const markdownContainer = document.querySelector('.dsa-resources-markdown');
+    
+    if (element && markdownContainer) {
+      // Calculate offset for fixed header
+      const headerOffset = 80; // Adjust this value based on your header height
+      const elementPosition = element.offsetTop;
+      const offsetPosition = elementPosition - headerOffset;
+
+      markdownContainer.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
       
       // Update active heading after scroll
       setTimeout(() => {
@@ -116,16 +126,29 @@ const DSAResources = ({ navigateTo }) => {
   // Handle scroll to highlight active section in sidebar
   useEffect(() => {
     const handleScroll = () => {
+      const markdownContainer = document.querySelector('.dsa-resources-markdown');
+      if (!markdownContainer) return;
+      
       const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
       let currentHeading = '';
       
-      for (let i = headings.length - 1; i >= 0; i--) {
+      // Calculate the threshold for considering a heading as "active"
+      const threshold = 100; // pixels from top of container
+      
+      for (let i = 0; i < headings.length; i++) {
         const heading = headings[i];
-        const rect = heading.getBoundingClientRect();
-        if (rect.top <= 100) {
+        const elementTop = heading.offsetTop;
+        const containerScrollTop = markdownContainer.scrollTop;
+        
+        // Check if heading is at or just above the threshold
+        if (elementTop - containerScrollTop <= threshold) {
           currentHeading = heading.id;
-          break;
         }
+      }
+      
+      // If we're at the very top, make sure first heading is active
+      if (markdownContainer.scrollTop === 0 && headings.length > 0) {
+        currentHeading = headings[0].id;
       }
       
       if (currentHeading && currentHeading !== activeHeading) {
@@ -135,8 +158,12 @@ const DSAResources = ({ navigateTo }) => {
 
     const markdownContainer = document.querySelector('.dsa-resources-markdown');
     if (markdownContainer) {
+      // Call once to set initial state after a small delay to ensure content is loaded
+      setTimeout(handleScroll, 100);
       markdownContainer.addEventListener('scroll', handleScroll);
-      return () => markdownContainer.removeEventListener('scroll', handleScroll);
+      return () => {
+        markdownContainer.removeEventListener('scroll', handleScroll);
+      };
     }
   }, [activeHeading]);
 
