@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Copy, Check } from 'lucide-react';
 
-const MarkdownCheatSheet = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+const MarkdownCheatSheet = ({ currentPage, navigateTo, cheatSheetId }) => {
   const [cheatSheet, setCheatSheet] = useState(null);
   const [sections, setSections] = useState([]);
   const [copiedCode, setCopiedCode] = useState(null);
@@ -13,10 +10,18 @@ const MarkdownCheatSheet = () => {
   useEffect(() => {
     const loadCheatSheet = async () => {
       try {
+        // Use the passed cheatSheetId instead of useParams
+        const id = cheatSheetId;
+        if (!id) {
+          // Navigate back to cheatsheets if no ID is provided
+          navigateTo('cheatsheets');
+          return;
+        }
+        
         // Load the markdown file directly
         const response = await fetch(`/src/markdown-cheatsheets/${id}.md`);
         if (!response.ok) {
-          navigate('/cheatsheets');
+          navigateTo('cheatsheets');
           return;
         }
         
@@ -74,12 +79,12 @@ const MarkdownCheatSheet = () => {
         parseContent(contentText);
       } catch (error) {
         console.error('Error loading cheat sheet:', error);
-        navigate('/cheatsheets');
+        navigateTo('cheatsheets');
       }
     };
     
     loadCheatSheet();
-  }, [id, navigate]);
+  }, [cheatSheetId, navigateTo]);
 
   const parseContent = (content) => {
     // Split content into sections by ##
@@ -343,7 +348,8 @@ const MarkdownCheatSheet = () => {
         >
           <div className="max-w-4xl w-full">
             <button
-              onClick={() => navigate('/cheatsheets')}
+              // Use the navigateTo function instead of useNavigate
+              onClick={() => navigateTo('cheatsheets')}
               className="flex items-center text-gray-300 hover:text-white mb-6 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 mr-2" />

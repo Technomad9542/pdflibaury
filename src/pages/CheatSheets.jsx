@@ -1,17 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Search, BookOpen, Tag, Calendar, User, FolderOpen, ChevronDown, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import cheatSheets from '../cheatsheets';
 
-const CheatSheets = () => {
+const CheatSheets = ({ navigateTo }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCheatSheets, setFilteredCheatSheets] = useState([]);
   const [groupedCheatSheets, setGroupedCheatSheets] = useState({});
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const dropdownRef = useRef(null);
-  const navigate = useNavigate();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -84,7 +82,8 @@ const CheatSheets = () => {
   }, [searchTerm, selectedCategory]);
 
   const handleCheatSheetClick = (id) => {
-    navigate(`/cheatsheet/${id}`);
+    // Use our new navigation system instead of React Router
+    navigateTo('cheatsheet', { id });
   };
 
   // If there's a search term or specific category, show filtered results, otherwise show grouped by category

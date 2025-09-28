@@ -1,10 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Building, BarChart, Clock, Zap, Search } from 'lucide-react';
 
-const DSACompanyWise = () => {
-  const navigate = useNavigate();
+const DSACompanyWise = ({ navigateTo }) => {
   const [companies, setCompanies] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -193,7 +191,7 @@ const DSACompanyWise = () => {
           className="mb-8"
         >
           <button
-            onClick={() => navigate('/dsa')}
+            onClick={() => navigateTo('dsa')}
             className="flex items-center text-gray-400 hover:text-white mb-6 transition-colors group"
           >
             <ArrowLeft className="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" />

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Building, BookOpen } from 'lucide-react';
 
-const DSA = () => {
-  const navigate = useNavigate();
+const DSA = ({ navigateTo }) => {
   const [activeTab, setActiveTab] = useState('company');
 
   const options = [
@@ -63,7 +61,13 @@ const DSA = () => {
                 transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
                 whileHover={{ y: -5 }}
                 className={`group relative bg-gradient-to-br ${option.color} rounded-2xl overflow-hidden cursor-pointer`}
-                onClick={() => navigate(`/dsa/${option.id}`)}
+                onClick={() => {
+                  if (option.id === 'company') {
+                    navigateTo('dsa/company');
+                  } else {
+                    navigateTo('dsa/resources');
+                  }
+                }}
               >
                 <div className="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
                 <div className="relative p-8 h-full flex flex-col">

@@ -1,11 +1,11 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Library from './pages/Library';
 import Welcome from './pages/Welcome';
 import CheatSheets from './pages/CheatSheets';
-import CheatSheet from './pages/CheatSheet';
 import MarkdownCheatSheet from './pages/MarkdownCheatSheet';
 import DSA from './pages/DSA';
 import DSACompanyWise from './pages/DSACompanyWise';
@@ -17,8 +17,99 @@ import MouseSpotlight from './components/MouseSpotlight'; // Import the MouseSpo
 import './App.css';
 
 function App() {
+  // State to hold the current virtual page key
+  const [currentPage, setCurrentPage] = useState('home');
+  // State to hold parameters for pages that need them (like cheat sheet ID)
+  const [pageParams, setPageParams] = useState({});
+  
+  // Initialize state from localStorage on mount
+  useEffect(() => {
+    const savedPage = localStorage.getItem('currentPage');
+    const savedParams = localStorage.getItem('pageParams');
+    if (savedPage) {
+      setCurrentPage(savedPage);
+    }
+    if (savedParams) {
+      setPageParams(JSON.parse(savedParams));
+    }
+  }, []);
+
+  // Update localStorage when currentPage or pageParams changes
+  useEffect(() => {
+    localStorage.setItem('currentPage', currentPage);
+    localStorage.setItem('pageParams', JSON.stringify(pageParams));
+  }, [currentPage, pageParams]);
+
+  // Function to navigate to a different page
+  const navigateTo = (page, params = {}) => {
+    setCurrentPage(page);
+    setPageParams(params);
+  };
+
+  // Get the component to render based on currentPage
+  const getCurrentPageComponent = () => {
+    switch (currentPage) {
+      case 'home':
+        return <Home navigateTo={navigateTo} />;
+      case 'welcome':
+        return (
+          <ProtectedRoute>
+            <Welcome />
+          </ProtectedRoute>
+        );
+      case 'library':
+        return (
+          <ProtectedRoute>
+            <Library />
+          </ProtectedRoute>
+        );
+      case 'search':
+        return (
+          <ProtectedRoute>
+            <Library />
+          </ProtectedRoute>
+        );
+      case 'cheatsheets':
+        return (
+          <ProtectedRoute>
+            <CheatSheets navigateTo={navigateTo} />
+          </ProtectedRoute>
+        );
+      case 'cheatsheet':
+        return (
+          <ProtectedRoute>
+            <MarkdownCheatSheet 
+              currentPage={currentPage} 
+              navigateTo={navigateTo} 
+              cheatSheetId={pageParams.id} 
+            />
+          </ProtectedRoute>
+        );
+      case 'dsa':
+        return (
+          <ProtectedRoute>
+            <DSA navigateTo={navigateTo} />
+          </ProtectedRoute>
+        );
+      case 'dsa/company':
+        return (
+          <ProtectedRoute>
+            <DSACompanyWise navigateTo={navigateTo} />
+          </ProtectedRoute>
+        );
+      case 'dsa/resources':
+        return (
+          <ProtectedRoute>
+            <DSAResources navigateTo={navigateTo} />
+          </ProtectedRoute>
+        );
+      default:
+        return <Home navigateTo={navigateTo} />;
+    }
+  };
+
   return (
-    <Router>
+    <MemoryRouter>
       <PDFViewerProvider>
         <div className="App relative">
           {/* Animated Background - Always visible */}
@@ -58,57 +149,15 @@ function App() {
             ))}
           </div>
 
-          <Header />
+          {/* Pass currentPage and navigateTo function to Header */}
+          <Header currentPage={currentPage} navigateTo={navigateTo} />
           
           <main className="relative z-0">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/welcome" element={
-                <ProtectedRoute>
-                  <Welcome />
-                </ProtectedRoute>
-              } />
-              <Route path="/library" element={
-                <ProtectedRoute>
-                  <Library />
-                </ProtectedRoute>
-              } />
-              <Route path="/search" element={
-                <ProtectedRoute>
-                  <Library />
-                </ProtectedRoute>
-              } />
-              <Route path="/cheatsheets" element={
-                <ProtectedRoute>
-                  <CheatSheets />
-                </ProtectedRoute>
-              } />
-              <Route path="/cheatsheet/:id" element={
-                <ProtectedRoute>
-                  <MarkdownCheatSheet />
-                </ProtectedRoute>
-              } />
-              <Route path="/dsa" element={
-                <ProtectedRoute>
-                  <DSA />
-                </ProtectedRoute>
-              } />
-              <Route path="/dsa/company" element={
-                <ProtectedRoute>
-                  <DSACompanyWise />
-                </ProtectedRoute>
-              } />
-              {/* Use the new DSAResources component instead of DSALearningResources */}
-              <Route path="/dsa/resources" element={
-                <ProtectedRoute>
-                  <DSAResources />
-                </ProtectedRoute>
-              } />
-            </Routes>
+            {getCurrentPageComponent()}
           </main>
         </div>
       </PDFViewerProvider>
-    </Router>
+    </MemoryRouter>
   );
 }
 
