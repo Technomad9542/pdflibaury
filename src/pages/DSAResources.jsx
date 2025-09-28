@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, ChevronDown, Menu, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -8,8 +7,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import TOCSection from '../components/TOCSection';
 import './DSAResources.css';
 
-const DSAResources = () => {
-  const navigate = useNavigate();
+const DSAResources = ({ navigateTo }) => {
   const [markdown, setMarkdown] = useState('');
   const [headings, setHeadings] = useState([]);
   const [expandedSections, setExpandedSections] = useState({});
@@ -196,13 +194,14 @@ const DSAResources = () => {
             <button
               className="dsa-resources-mobile-menu-button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? "Close table of contents" : "Open table of contents"}
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
             
             {/* Back button */}
             <button
-              onClick={() => navigate('/dsa')}
+              onClick={() => navigateTo('dsa')}
               className="dsa-resources-back-button"
             >
               <ArrowLeft className="h-5 w-5 mr-2" />
@@ -215,28 +214,31 @@ const DSAResources = () => {
           <div className="dsa-resources-content">
             {/* Mobile/Tablet TOC Drawer */}
             <div className={`dsa-resources-mobile-toc-drawer ${isMobileMenuOpen ? 'open' : ''}`}>
-              <div className="dsa-resources-mobile-toc-header">
-                <h2 className="dsa-resources-sidebar-title">Table of Contents</h2>
-                <button
-                  className="dsa-resources-mobile-toc-close"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <X size={24} />
-                </button>
-              </div>
-              <div className="dsa-resources-toc-container">
-                <ul className="dsa-resources-toc">
-                  {groupedHeadings.map((section) => (
-                    <TOCSection
-                      key={section.id}
-                      section={section}
-                      activeHeading={activeHeading}
-                      expandedSections={expandedSections}
-                      handleHeadingClick={handleHeadingClick}
-                      toggleSection={toggleSection}
-                    />
-                  ))}
-                </ul>
+              <div className="dsa-resources-mobile-toc-menu">
+                <div className="dsa-resources-mobile-toc-header">
+                  <h2 className="dsa-resources-sidebar-title">Table of Contents</h2>
+                  <button
+                    className="dsa-resources-mobile-toc-close"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    aria-label="Close table of contents"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+                <div className="dsa-resources-toc-container">
+                  <ul className="dsa-resources-toc">
+                    {groupedHeadings.map((section) => (
+                      <TOCSection
+                        key={section.id}
+                        section={section}
+                        activeHeading={activeHeading}
+                        expandedSections={expandedSections}
+                        handleHeadingClick={handleHeadingClick}
+                        toggleSection={toggleSection}
+                      />
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
 

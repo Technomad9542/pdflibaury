@@ -1,10 +1,9 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { ArrowRight, Download, BookOpen, Zap, Search, Users, Code } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 
-const Home = () => {
+const Home = ({ navigateTo }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { user } = useAuth();
 
@@ -32,41 +31,47 @@ const Home = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Link to="/library" className="block">
-              <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-center hover:scale-105 transition-transform duration-300">
-                <BookOpen className="h-12 w-12 text-white mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-white mb-2">PDF Library</h2>
-                <p className="text-blue-100 mb-4">Browse our extensive collection of educational PDFs</p>
-                <div className="inline-flex items-center text-white font-medium">
-                  Explore Library
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </div>
+            {/* Library Card */}
+            <div 
+              className="block bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 text-center hover:scale-105 transition-transform duration-300 cursor-pointer"
+              onClick={() => navigateTo('library')}
+            >
+              <BookOpen className="h-12 w-12 text-white mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">PDF Library</h2>
+              <p className="text-blue-100 mb-4">Browse our extensive collection of educational PDFs</p>
+              <div className="inline-flex items-center text-white font-medium">
+                Explore Library
+                <ArrowRight className="ml-2 h-5 w-5" />
               </div>
-            </Link>
+            </div>
 
-            <Link to="/cheatsheets" className="block">
-              <div className="bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl p-8 text-center hover:scale-105 transition-transform duration-300">
-                <BookOpen className="h-12 w-12 text-white mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-white mb-2">Cheat Sheets</h2>
-                <p className="text-green-100 mb-4">Access quick reference guides and study materials</p>
-                <div className="inline-flex items-center text-white font-medium">
-                  Explore Sheets
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </div>
+            {/* Cheat Sheets Card */}
+            <div 
+              className="block bg-gradient-to-br from-green-500 to-teal-600 rounded-2xl p-8 text-center hover:scale-105 transition-transform duration-300 cursor-pointer"
+              onClick={() => navigateTo('cheatsheets')}
+            >
+              <BookOpen className="h-12 w-12 text-white mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">Cheat Sheets</h2>
+              <p className="text-green-100 mb-4">Access quick reference guides and study materials</p>
+              <div className="inline-flex items-center text-white font-medium">
+                Explore Sheets
+                <ArrowRight className="ml-2 h-5 w-5" />
               </div>
-            </Link>
+            </div>
 
-            <Link to="/dsa" className="block">
-              <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-8 text-center hover:scale-105 transition-transform duration-300">
-                <Code className="h-12 w-12 text-white mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-white mb-2">DSA Practice</h2>
-                <p className="text-orange-100 mb-4">Company-wise DSA questions and learning resources</p>
-                <div className="inline-flex items-center text-white font-medium">
-                  Start Practicing
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </div>
+            {/* DSA Card */}
+            <div 
+              className="block bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-8 text-center hover:scale-105 transition-transform duration-300 cursor-pointer"
+              onClick={() => navigateTo('dsa')}
+            >
+              <Code className="h-12 w-12 text-white mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">DSA Practice</h2>
+              <p className="text-orange-100 mb-4">Company-wise DSA questions and learning resources</p>
+              <div className="inline-flex items-center text-white font-medium">
+                Start Practicing
+                <ArrowRight className="ml-2 h-5 w-5" />
               </div>
-            </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -162,7 +167,10 @@ const Home = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
           >
-            <Link to="/library">
+            <button
+              onClick={() => navigateTo('library')}
+              className="group"
+            >
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
@@ -174,9 +182,12 @@ const Home = () => {
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-75 group-hover:opacity-100 transition-opacity -z-10"></div>
               </motion.button>
-            </Link>
+            </button>
 
-            <Link to="/search">
+            <button
+              onClick={() => navigateTo('search')}
+              className="group"
+            >
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
@@ -185,7 +196,7 @@ const Home = () => {
                 <Search className="mr-2 h-5 w-5" />
                 Start Searching
               </motion.button>
-            </Link>
+            </button>
           </motion.div>
 
           {/* Stats */}
@@ -327,7 +338,9 @@ const Home = () => {
               <p className="text-xl text-gray-300 mb-8">
                 Join thousands of learners who have already discovered the power of PDFusion.
               </p>
-              <Link to="/library">
+              <button
+                onClick={() => navigateTo('library')}
+              >
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -335,7 +348,7 @@ const Home = () => {
                 >
                   Get Started Now
                 </motion.button>
-              </Link>
+              </button>
             </div>
           </motion.div>
         </div>

@@ -1,25 +1,22 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, Search, Menu, X, Settings, User } from 'lucide-react';
+import { BookOpen, Menu, X, Settings, User } from 'lucide-react';
 import AdminPanel from './AdminPanel';
 import useAuth from '../hooks/useAuth';
 import AdminDataService from '../utils/adminDataService';
 import { usePDFViewer } from '../contexts/PDFViewerContext';
 
-const Header = () => {
+const Header = ({ currentPage, navigateTo }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isAdminUser, setIsAdminUser] = useState(false);
   const [isAdminCheckLoading, setIsAdminCheckLoading] = useState(false);
-  const location = useLocation();
   const { user, loading, signInWithGoogle, signOut } = useAuth();
-  const navigate = useNavigate();
   const { isPDFViewerOpen } = usePDFViewer();
 
   // Check if we should hide navbar on current page
-  const shouldHideNavbar = location.pathname === '/dsa/resources';
+  const shouldHideNavbar = currentPage === 'dsa/resources';
 
   // Check if user is admin when user state changes
   useEffect(() => {
@@ -56,18 +53,29 @@ const Header = () => {
   // Only show Home button when not logged in
   const navItems = user 
     ? [
-        { name: 'Home', path: '/', icon: BookOpen },
-        { name: 'Library', path: '/library', icon: BookOpen, protected: true },
-        { name: 'Search', path: '/search', icon: Search, protected: true },
+        { name: 'Home', path: 'home', icon: BookOpen },
+        { name: 'Library', path: 'library', icon: BookOpen, protected: true },
+        { name: 'Cheat Sheets', path: 'cheatsheets', icon: BookOpen, protected: true },
+        { name: 'DSA', path: 'dsa', icon: BookOpen, protected: true },
       ]
     : [
-        { name: 'Home', path: '/', icon: BookOpen }
+        { name: 'Home', path: 'home', icon: BookOpen }
       ];
 
   // Don't render navbar on DSA resources page or when PDF viewer is open
   if (shouldHideNavbar || isPDFViewerOpen) {
     return null;
   }
+
+  // Handle navigation
+  const handleNavigation = (path) => {
+    if ((path === 'cheatsheets' || path === 'dsa') && !user) {
+      signInWithGoogle();
+      return;
+    }
+    navigateTo(path);
+    setIsMenuOpen(false);
+  };
 
   return (
     <motion.header
@@ -112,7 +120,7 @@ const Header = () => {
           >
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+              const isActive = currentPage === item.path;
               
               // For protected routes, show a button that triggers login if not authenticated
               if (item.protected && !user) {
@@ -126,23 +134,20 @@ const Header = () => {
                   >
                     <Icon className="h-5 w-5" />
                     <span className="font-medium">{item.name}</span>
-                    <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
-                      Login Required
-                    </span>
                   </motion.button>
                 );
               }
               
               // For regular routes or when user is authenticated
               return (
-                <Link
+                <motion.button
                   key={item.name}
-                  to={item.path}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleNavigation(item.path)}
                   className="group relative"
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <div
                     className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 ${
                       isActive
                         ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400'
@@ -151,12 +156,7 @@ const Header = () => {
                   >
                     <Icon className="h-5 w-5" />
                     <span className="font-medium">{item.name}</span>
-                    {item.protected && (
-                      <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
-                        Protected
-                      </span>
-                    )}
-                  </motion.div>
+                  </div>
                   {isActive && (
                     <motion.div
                       layoutId="activeIndicator"
@@ -164,7 +164,7 @@ const Header = () => {
                       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                     />
                   )}
-                </Link>
+                </motion.button>
               );
             })}
           </motion.div>
@@ -270,7 +270,7 @@ const Header = () => {
           <div className="py-4 space-y-2">
             {navItems.map((item, index) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+              const isActive = currentPage === item.path;
               
               // For protected routes when not logged in
               if (item.protected && !user) {
@@ -294,9 +294,6 @@ const Header = () => {
                     >
                       <Icon className="h-5 w-5" />
                       <span className="font-medium">{item.name}</span>
-                      <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
-                        Login Required
-                      </span>
                     </button>
                   </motion.div>
                 );
@@ -310,10 +307,9 @@ const Header = () => {
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Link
-                    to={item.path}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center space-x-3 px-6 py-3 transition-all duration-200 ${
+                  <button
+                    onClick={() => handleNavigation(item.path)}
+                    className={`w-full flex items-center space-x-3 px-6 py-3 transition-all duration-200 text-left ${
                       isActive
                         ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 border-r-2 border-blue-500'
                         : 'text-gray-300 hover:text-white hover:bg-white/5'
@@ -321,12 +317,7 @@ const Header = () => {
                   >
                     <Icon className="h-5 w-5" />
                     <span className="font-medium">{item.name}</span>
-                    {item.protected && (
-                      <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
-                        Protected
-                      </span>
-                    )}
-                  </Link>
+                  </button>
                 </motion.div>
               );
             })}
