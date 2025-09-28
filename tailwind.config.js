@@ -6,6 +6,10 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        'tablet': '875px',
+        // ... other breakpoints
+      },
       colors: {
         primary: {
           50: '#eff6ff',
